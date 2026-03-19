@@ -72,6 +72,11 @@
         </div>
       </div>
 
+      <div class="topbar-actions">
+        <button id="navHomeBtn" class="pill-btn" type="button" data-i18n="nav.homeButton">Inicio</button>
+        <button id="aboutBtn" class="pill-btn" type="button" data-i18n="nav.aboutButton">Acerca de</button>
+      </div>
+
       <button id="languageToggle" class="language-toggle pill-btn" type="button">CASTELLANO | ENGLISH</button>
     </nav>
 
@@ -215,6 +220,18 @@
           <p class="hint" data-i18n="editor.jsonText">Se exporta un único documento con `version`, `canvas` e `instances`, listo para reconstruir el layout luego.</p>
         </section>
       </aside>
+    </div>
+
+    <div id="aboutModal" class="modal is-hidden" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="aboutTitle">
+      <div class="modal-backdrop" data-modal-close="true"></div>
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2 id="aboutTitle" class="modal-title" data-i18n="about.title">Acerca de</h2>
+          <button id="aboutCloseBtn" class="pill-btn modal-close" type="button" data-i18n="about.closeButton">Cerrar</button>
+        </div>
+        <p class="modal-text" data-i18n="about.body">Hecho por perulainen.</p>
+        <a class="modal-link" href="https://github.com/mauriciolaser/layout-editor" target="_blank" rel="noreferrer" data-i18n="about.githubLabel">GitHub</a>
+      </div>
     </div>
 
     <script type="module" src="./main.js"></script>

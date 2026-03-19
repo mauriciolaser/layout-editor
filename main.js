@@ -10,7 +10,11 @@ const els = {
   newProjectBtn: document.getElementById('newProjectBtn'),
   projectList: document.getElementById('projectList'),
   projectTitle: document.getElementById('projectTitle'),
+  navHomeBtn: document.getElementById('navHomeBtn'),
+  aboutBtn: document.getElementById('aboutBtn'),
   languageToggle: document.getElementById('languageToggle'),
+  aboutModal: document.getElementById('aboutModal'),
+  aboutCloseBtn: document.getElementById('aboutCloseBtn'),
 };
 
 let uiCatalog = null;
@@ -227,15 +231,28 @@ function scheduleSave(projectId, doc) {
 
 function showHome() {
   currentProjectId = null;
+  hideAboutModal();
   els.editorView.classList.add('is-hidden');
   els.homeView.classList.remove('is-hidden');
   renderProjectList();
 }
 
 function showEditor(project) {
+  hideAboutModal();
   els.projectTitle.textContent = project?.name || t('editor.projectBadge');
   els.homeView.classList.add('is-hidden');
   els.editorView.classList.remove('is-hidden');
+}
+
+function showAboutModal() {
+  els.aboutModal.classList.remove('is-hidden');
+  els.aboutModal.setAttribute('aria-hidden', 'false');
+}
+
+function hideAboutModal() {
+  if (!els.aboutModal) return;
+  els.aboutModal.classList.add('is-hidden');
+  els.aboutModal.setAttribute('aria-hidden', 'true');
 }
 
 function openProject(id) {
@@ -247,6 +264,22 @@ function openProject(id) {
 }
 
 function bindEvents() {
+  els.navHomeBtn.addEventListener('click', () => showHome());
+  els.aboutBtn.addEventListener('click', () => showAboutModal());
+  els.aboutCloseBtn.addEventListener('click', () => hideAboutModal());
+
+  els.aboutModal.addEventListener('click', (event) => {
+    if (event.target?.dataset?.modalClose === 'true') {
+      hideAboutModal();
+    }
+  });
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      hideAboutModal();
+    }
+  });
+
   els.newProjectBtn.addEventListener('click', () => {
     const name = els.newProjectName.value;
     els.newProjectName.value = '';

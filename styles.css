@@ -146,6 +146,16 @@
         min-width: 0;
       }
 
+      .topbar-actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        flex: 1 1 auto;
+        min-width: 0;
+        flex-wrap: wrap;
+      }
+
       .topbar-logo {
         display: block;
         width: auto;
@@ -175,6 +185,7 @@
         color: var(--text);
         backdrop-filter: blur(14px);
         white-space: nowrap;
+        flex: 0 0 auto;
       }
 
       .language-toggle[aria-pressed="true"] {
@@ -376,6 +387,66 @@
         gap: 8px;
       }
 
+      .modal {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: grid;
+        place-items: center;
+        padding: 20px;
+      }
+
+      .modal-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(3, 6, 12, 0.72);
+        backdrop-filter: blur(6px);
+      }
+
+      .modal-card {
+        position: relative;
+        z-index: 1;
+        width: min(540px, 100%);
+        background: rgba(18, 24, 33, 0.98);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        box-shadow: 0 26px 80px rgba(0, 0, 0, 0.45);
+        padding: 18px;
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .modal-title {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      .modal-text {
+        margin: 0 0 14px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .modal-link {
+        color: var(--accent-2);
+        text-decoration: none;
+        font-weight: 700;
+      }
+
+      .modal-link:hover {
+        text-decoration: underline;
+      }
+
+      .modal-close {
+        padding: 8px 12px;
+      }
+
       .hint {
         margin: 0;
         font-size: 12px;
@@ -394,6 +465,13 @@
           margin: 12px 12px 0;
           padding: 10px 12px;
           gap: 10px;
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .topbar-actions {
+          width: 100%;
+          justify-content: flex-start;
         }
 
         .topbar-logo {
@@ -407,6 +485,10 @@
 
         .language-toggle {
           padding: 8px 10px;
+        }
+
+        .modal {
+          padding: 14px;
         }
 
         .field-grid {

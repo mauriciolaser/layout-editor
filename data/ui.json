@@ -21,6 +21,10 @@
       "defaultProjectName": "Nuevo proyecto",
       "projectBadge": "Proyecto"
     },
+    "nav": {
+      "homeButton": "Inicio",
+      "aboutButton": "Acerca de"
+    },
     "editor": {
       "projectBadge": "Proyecto",
       "homeButton": "Inicio",
@@ -91,6 +95,12 @@
         "exported": "JSON exportado como editor-layout.json",
         "selected": "Seleccionada {id}"
       }
+    },
+    "about": {
+      "title": "Acerca de",
+      "body": "Hecho por perulainen.",
+      "githubLabel": "GitHub",
+      "closeButton": "Cerrar"
     }
   },
   "en": {
@@ -114,6 +124,10 @@
       "confirmDeleteProject": "Delete project \"{name}\"?",
       "defaultProjectName": "New project",
       "projectBadge": "Project"
+    },
+    "nav": {
+      "homeButton": "Home",
+      "aboutButton": "About"
     },
     "editor": {
       "projectBadge": "Project",
@@ -185,6 +199,12 @@
         "exported": "JSON exported as editor-layout.json",
         "selected": "Selected {id}"
       }
+    },
+    "about": {
+      "title": "About",
+      "body": "Built by perulainen.",
+      "githubLabel": "GitHub",
+      "closeButton": "Close"
     }
   }
 }

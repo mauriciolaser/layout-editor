@@ -49,6 +49,8 @@ Formato base:
   - `en`
 - La pagina tiene una navbar superior con el logo y un toggle para cambiar entre castellano e ingles.
 - El idioma se persiste en `localStorage` para mantener la preferencia entre sesiones.
+- La navbar incluye `Inicio` y `Acerca de`.
+- `Acerca de` abre un modal con el credito de `perulainen` y el link al repo.
 
 ## Comportamiento Del Editor
 - `Nueva instancia`: crea un rectangulo nuevo con `label`, `z` y `id` autogenerados.
@@ -74,6 +76,7 @@ Formato base:
 ## Navegacion
 - En el editor existe un menu con boton `Inicio` para volver a Home.
 - La parte superior de la app usa una navbar compartida con `logo.png` y el selector de idioma.
+- El modal About se cierra con el boton, el fondo o `Esc`.
 
 ## Notas De Implementacion
 - El hit-testing del canvas prioriza la instancia con mayor `z`.
