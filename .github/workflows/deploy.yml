@@ -29,6 +29,28 @@ jobs:
           cp index.html deploy_staging/index.html
           cp -a editor deploy_staging/editor
 
+          # Optional: inject GA_ID into index.html (if configured as a GitHub secret)
+          GA_ID="${{ secrets.GA_ID }}"
+          if [ -n "${GA_ID:-}" ]; then
+            sed -i "s|__GA_ID__|$GA_ID|g" deploy_staging/index.html
+          fi
+
+          # Static assets (favicons / manifest)
+          for f in \
+            favicon.ico \
+            favicon.svg \
+            favicon-16x16.png \
+            favicon-32x32.png \
+            apple-touch-icon.png \
+            favicon-192x192.png \
+            favicon-512x512.png \
+            site.webmanifest
+          do
+            if [ -f "$f" ]; then
+              cp "$f" "deploy_staging/$f"
+            fi
+          done
+
       - name: Upload via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:

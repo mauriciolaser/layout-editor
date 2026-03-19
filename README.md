@@ -41,6 +41,7 @@ Configura estos secrets en el repo de GitHub (Settings -> Secrets and variables 
 - `FTP_USERNAME`
 - `FTP_PASSWORD`
 - `FTP_DESTINATION` (debe terminar con `/`)
+- `GA_ID` (opcional, formato `G-XXXXXX` para GA4)
 
 ### Comando de deploy (1 comando)
 
@@ -55,4 +56,3 @@ Opcionalmente, para otra rama:
 ```powershell
 .\scripts\deploy.ps1 -branch main
 ```
-

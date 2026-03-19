@@ -3,7 +3,61 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Editor De Instancias</title>
+    <title>perulainen | Layout Editor</title>
+    <meta
+      name="description"
+      content="Editor 2D para construir layouts exportables como JSON sobre un canvas 1920x1080."
+    />
+    <meta
+      name="keywords"
+      content="perulainen, layout editor, editor 2D, canvas, instancias, JSON, level editor"
+    />
+    <meta name="author" content="perulainen" />
+    <meta name="robots" content="index,follow" />
+
+    <meta property="og:title" content="perulainen | Layout Editor" />
+    <meta
+      property="og:description"
+      content="Editor 2D para construir layouts exportables como JSON sobre un canvas 1920x1080."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="perulainen" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="perulainen | Layout Editor" />
+    <meta
+      name="twitter:description"
+      content="Editor 2D para construir layouts exportables como JSON sobre un canvas 1920x1080."
+    />
+
+    <meta name="theme-color" content="#0b0d12" />
+
+    <link rel="icon" href="./favicon.ico" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./site.webmanifest" />
+
+    <!-- Google Analytics (GA4). GA_ID is injected during deploy. -->
+    <script>
+      (function () {
+        const GA_ID = "__GA_ID__";
+        if (!GA_ID || GA_ID === "__GA_ID__") return;
+
+        const s = document.createElement("script");
+        s.async = true;
+        s.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(GA_ID);
+        document.head.appendChild(s);
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          window.dataLayer.push(arguments);
+        }
+        gtag("js", new Date());
+        gtag("config", GA_ID);
+      })();
+    </script>
     <style>
       :root {
         --bg: #0b0d12;
