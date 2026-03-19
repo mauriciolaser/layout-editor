@@ -32,10 +32,10 @@ jobs:
           cp -a editor deploy_staging/editor
           cp -a data deploy_staging/data
 
-          # Optional: inject GA_ID into main.js (if configured as a GitHub secret)
+          # Optional: inject GA_ID into index.html (if configured as a GitHub secret)
           GA_ID="${{ secrets.GA_ID }}"
           if [ -n "${GA_ID:-}" ]; then
-            sed -i "s|__GA_ID__|$GA_ID|g" deploy_staging/main.js
+            sed -i "s|__GA_ID__|$GA_ID|g" deploy_staging/index.html
           fi
 
           # Static assets (favicons / manifest)

@@ -54,9 +54,9 @@
         document.head.appendChild(s);
 
         window.dataLayer = window.dataLayer || [];
-        function gtag() {
+        window.gtag = function gtag() {
           window.dataLayer.push(arguments);
-        }
+        };
         gtag("js", new Date());
         gtag("config", GA_ID);
       })();
