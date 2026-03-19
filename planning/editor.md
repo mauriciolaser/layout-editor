@@ -1,7 +1,7 @@
 # Editor De Instancias
 
 ## Resumen
-El editor en `index.html` permite construir un layout 2D exportable como un unico JSON.
+La aplicacion tiene una pantalla Home con proyectos guardados en `localStorage` y un editor 2D exportable como un unico JSON.
 Trabaja sobre un canvas fijo de `1920x1080` (`16:9`) y escala solo la vista, no las coordenadas del documento.
 
 ## Documento Exportado
@@ -19,6 +19,7 @@ Formato base:
     {
       "id": "instance_001",
       "label": "Hero",
+      "notes": "Zona segura para UI. No poner personajes aca.",
       "x": 120,
       "y": 80,
       "width": 420,
@@ -33,6 +34,7 @@ Formato base:
 ## Campos De Instancia
 - `id`: identificador estable autogenerado.
 - `label`: nombre editable mostrado en canvas y panel lateral.
+- `notes`: longtext para guiar a usuarios (se preserva en el JSON).
 - `x`: posicion horizontal en coordenadas del canvas base.
 - `y`: posicion vertical en coordenadas del canvas base.
 - `width`: ancho de la instancia.
@@ -45,10 +47,23 @@ Formato base:
 - Seleccion: se puede hacer desde el canvas o desde la lista de capas.
 - Movimiento: drag con snap a grilla.
 - Resize: handles en las cuatro esquinas con snap a grilla.
-- Propiedades: `label`, `x`, `y`, `width`, `height`, `z` y `color` editables desde el sidebar.
+- Propiedades: `label`, `notes`, `x`, `y`, `width`, `height`, `z` y `color` editables desde el sidebar.
 - Capas: lista visual ordenada por prioridad; `Subir` y `Bajar` intercambian posicion efectiva.
 - Export: descarga `editor-layout.json`.
 - Copiar: envia el mismo JSON al portapapeles.
+
+## Home Y Proyectos (Persistencia)
+- La pantalla Home lista proyectos guardados en `localStorage`.
+- Acciones:
+  - Crear proyecto nuevo.
+  - Abrir proyecto.
+  - Borrar proyecto.
+- Guardado:
+  - Se auto-guarda el documento del proyecto al editar (debounce corto).
+  - Los proyectos viven solo en el navegador actual.
+
+## Navegacion
+- En el editor existe un menu con boton `Inicio` para volver a Home.
 
 ## Notas De Implementacion
 - El hit-testing del canvas prioriza la instancia con mayor `z`.
@@ -57,5 +72,7 @@ Formato base:
 - El color se guarda por instancia y no afecta dimensiones ni orden.
 
 ## Archivos Relevantes
-- `index.html`: shell visual y controles del editor.
-- `editor/main.js`: estado, render, interaccion y export JSON.
+- `index.html`: shell visual (Home + Editor).
+- `styles.css`: estilos (CSS separado del HTML).
+- `main.js`: Home, proyectos en `localStorage`, navegacion y analytics.
+- `editor/main.js`: editor (estado, render, interaccion, export JSON).

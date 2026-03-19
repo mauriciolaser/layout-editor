@@ -27,12 +27,14 @@ jobs:
           rm -rf deploy_staging
           mkdir -p deploy_staging
           cp index.html deploy_staging/index.html
+          cp main.js deploy_staging/main.js
+          cp styles.css deploy_staging/styles.css
           cp -a editor deploy_staging/editor
 
-          # Optional: inject GA_ID into index.html (if configured as a GitHub secret)
+          # Optional: inject GA_ID into main.js (if configured as a GitHub secret)
           GA_ID="${{ secrets.GA_ID }}"
           if [ -n "${GA_ID:-}" ]; then
-            sed -i "s|__GA_ID__|$GA_ID|g" deploy_staging/index.html
+            sed -i "s|__GA_ID__|$GA_ID|g" deploy_staging/main.js
           fi
 
           # Static assets (favicons / manifest)
