@@ -46,7 +46,7 @@
     <script>
       (function () {
         const GA_ID = "__GA_ID__";
-        if (!GA_ID || GA_ID === "__GA_ID__") return;
+        if (!GA_ID || GA_ID.startsWith("__GA_")) return;
 
         const s = document.createElement("script");
         s.async = true;
