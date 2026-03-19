@@ -51,6 +51,11 @@ jobs:
             fi
           done
 
+          # Social preview image
+          if [ -f banner.webp ]; then
+            cp banner.webp deploy_staging/banner.webp
+          fi
+
       - name: Upload via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
