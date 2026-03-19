@@ -69,6 +69,8 @@ function showEditor(project) {
   els.projectTitle.textContent = project?.name || 'Proyecto';
   els.homeView.classList.add('is-hidden');
   els.editorView.classList.remove('is-hidden');
+  // The editor may have been initialized while hidden; resize after it becomes visible.
+  window.requestAnimationFrame(() => editor.resize());
 }
 
 function getProjectById(id) {
@@ -177,6 +179,7 @@ function openProject(id) {
   currentProjectId = id;
   showEditor(project);
   editor.loadDocument(project.document);
+  window.requestAnimationFrame(() => editor.resize());
 }
 
 function bindHome() {

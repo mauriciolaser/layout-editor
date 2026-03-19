@@ -762,6 +762,8 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
     state.selectedId = state.document.instances[0]?.id ?? null;
     updateNextIdSeed();
     setStatus('Proyecto cargado.');
+    // If the editor was initialized while hidden, recompute now.
+    resizeCanvas();
     syncUi();
     emitChange();
   }
@@ -783,6 +785,9 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
     loadDocument,
     newDocument,
     exportDocument,
+    resize: () => {
+      resizeCanvas();
+      syncUi();
+    },
   };
 }
-
