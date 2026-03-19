@@ -36,6 +36,14 @@ jobs:
           GA_ID="${{ secrets.GA_ID }}"
           if [ -n "${GA_ID:-}" ]; then
             sed -i "s|__GA_ID__|$GA_ID|g" deploy_staging/index.html
+            if grep -q "$GA_ID" deploy_staging/index.html; then
+              echo "GA_ID injected into deploy_staging/index.html"
+            else
+              echo "GA_ID injection failed"
+              exit 1
+            fi
+          else
+            echo "GA_ID secret not set; skipping analytics injection"
           fi
 
           # Static assets (favicons / manifest)
