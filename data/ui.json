@@ -1,0 +1,190 @@
+{
+  "es": {
+    "meta": {
+      "title": "perulainen | Layout Editor",
+      "description": "Editor 2D para construir layouts exportables como JSON sobre un canvas 1920x1080.",
+      "keywords": "perulainen, layout editor, editor 2D, canvas, instancias, JSON, level editor",
+      "siteName": "perulainen"
+    },
+    "home": {
+      "title": "perulainen | Layout Editor",
+      "subtitle": "Tus proyectos se guardan localmente en este navegador (localStorage).",
+      "newProjectLabel": "Nuevo proyecto",
+      "newProjectPlaceholder": "Ej. Landing V1",
+      "newProjectButton": "Crear",
+      "projectsHeading": "Proyectos",
+      "emptyProjects": "Todavia no hay proyectos. Crea uno para empezar.",
+      "updatedPrefix": "Actualizado:",
+      "openButton": "Abrir",
+      "deleteButton": "Borrar",
+      "confirmDeleteProject": "Borrar proyecto \"{name}\"?",
+      "defaultProjectName": "Nuevo proyecto",
+      "projectBadge": "Proyecto"
+    },
+    "editor": {
+      "projectBadge": "Proyecto",
+      "homeButton": "Inicio",
+      "gridLabel": "Grilla",
+      "createButton": "Nueva instancia",
+      "deleteButton": "Eliminar",
+      "exportButton": "Exportar JSON",
+      "copyButton": "Copiar JSON",
+      "selectionHeading": "Instancia Seleccionada",
+      "propertiesHeading": "Propiedades",
+      "fields": {
+        "label": "Label",
+        "notes": "Notas",
+        "x": "X",
+        "y": "Y",
+        "width": "Width",
+        "height": "Height",
+        "z": "Z Order",
+        "color": "Color"
+      },
+      "placeholders": {
+        "label": "Ej. Hero",
+        "notes": "Info para guiar a usuarios..."
+      },
+      "selection": {
+        "id": "ID",
+        "label": "Label",
+        "notes": "Notas",
+        "color": "Color",
+        "x": "X",
+        "y": "Y",
+        "width": "Width",
+        "height": "Height",
+        "z": "Z"
+      },
+      "bringForwardButton": "Subir",
+      "sendBackwardButton": "Bajar",
+      "layersHeading": "Capas",
+      "sortAscButton": "Ordenar Z asc",
+      "instancePrefix": "Instancia",
+      "shortcutsHeading": "Atajos",
+      "shortcutsText": "Click para seleccionar. Arrastrá para mover. Arrastrá los handles de las esquinas para cambiar width y height. El snap a grilla se aplica al mover y redimensionar.",
+      "jsonHeading": "JSON",
+      "jsonText": "Se exporta un unico documento con `version`, `canvas` e `instances`, listo para reconstruir el layout luego.",
+      "meta": {
+        "canvasPrefix": "Canvas:",
+        "instancePrefix": "Instancias:",
+        "selectedPrefix": "Seleccionada:",
+        "selectedNone": "Seleccionada: ninguna"
+      },
+      "layers": {
+        "empty": "Todavia no hay instancias. Crea una para empezar."
+      },
+      "status": {
+        "ready": "Editor listo.",
+        "projectLoaded": "Proyecto cargado.",
+        "noSelection": "Sin seleccion.",
+        "instanceCreated": "Instancia creada: {id}",
+        "instanceDeleted": "Instancia eliminada: {id}",
+        "changesReady": "Cambios listos para exportar.",
+        "labelUpdated": "Label actualizado para {id}",
+        "notesUpdated": "Notas actualizadas para {id}",
+        "colorUpdated": "Color actualizado para {id}",
+        "propertyUpdated": "Propiedad {key} actualizada.",
+        "ordered": "Orden interno actualizado.",
+        "copied": "JSON copiado al portapapeles.",
+        "copyFailed": "No se pudo copiar el JSON.",
+        "exported": "JSON exportado como editor-layout.json",
+        "selected": "Seleccionada {id}"
+      }
+    }
+  },
+  "en": {
+    "meta": {
+      "title": "perulainen | Layout Editor",
+      "description": "2D editor for building JSON-exportable layouts on a 1920x1080 canvas.",
+      "keywords": "perulainen, layout editor, 2D editor, canvas, instances, JSON, level editor",
+      "siteName": "perulainen"
+    },
+    "home": {
+      "title": "perulainen | Layout Editor",
+      "subtitle": "Your projects are saved locally in this browser (localStorage).",
+      "newProjectLabel": "New project",
+      "newProjectPlaceholder": "E.g. Landing V1",
+      "newProjectButton": "Create",
+      "projectsHeading": "Projects",
+      "emptyProjects": "There are no projects yet. Create one to get started.",
+      "updatedPrefix": "Updated:",
+      "openButton": "Open",
+      "deleteButton": "Delete",
+      "confirmDeleteProject": "Delete project \"{name}\"?",
+      "defaultProjectName": "New project",
+      "projectBadge": "Project"
+    },
+    "editor": {
+      "projectBadge": "Project",
+      "homeButton": "Home",
+      "gridLabel": "Grid",
+      "createButton": "New instance",
+      "deleteButton": "Delete",
+      "exportButton": "Export JSON",
+      "copyButton": "Copy JSON",
+      "selectionHeading": "Selected Instance",
+      "propertiesHeading": "Properties",
+      "fields": {
+        "label": "Label",
+        "notes": "Notes",
+        "x": "X",
+        "y": "Y",
+        "width": "Width",
+        "height": "Height",
+        "z": "Z Order",
+        "color": "Color"
+      },
+      "placeholders": {
+        "label": "E.g. Hero",
+        "notes": "Useful notes for the user..."
+      },
+      "selection": {
+        "id": "ID",
+        "label": "Label",
+        "notes": "Notes",
+        "color": "Color",
+        "x": "X",
+        "y": "Y",
+        "width": "Width",
+        "height": "Height",
+        "z": "Z"
+      },
+      "bringForwardButton": "Bring forward",
+      "sendBackwardButton": "Send backward",
+      "layersHeading": "Layers",
+      "sortAscButton": "Sort Z asc",
+      "instancePrefix": "Instance",
+      "shortcutsHeading": "Shortcuts",
+      "shortcutsText": "Click to select. Drag to move. Drag the corner handles to change width and height. Grid snapping applies while moving and resizing.",
+      "jsonHeading": "JSON",
+      "jsonText": "A single document is exported with `version`, `canvas`, and `instances`, ready to rebuild the layout later.",
+      "meta": {
+        "canvasPrefix": "Canvas:",
+        "instancePrefix": "Instances:",
+        "selectedPrefix": "Selected:",
+        "selectedNone": "Selected: none"
+      },
+      "layers": {
+        "empty": "There are no instances yet. Create one to get started."
+      },
+      "status": {
+        "ready": "Editor ready.",
+        "projectLoaded": "Project loaded.",
+        "noSelection": "No selection.",
+        "instanceCreated": "Instance created: {id}",
+        "instanceDeleted": "Instance deleted: {id}",
+        "changesReady": "Changes ready to export.",
+        "labelUpdated": "Label updated for {id}",
+        "notesUpdated": "Notes updated for {id}",
+        "colorUpdated": "Color updated for {id}",
+        "propertyUpdated": "Property {key} updated.",
+        "ordered": "Internal order updated.",
+        "copied": "JSON copied to clipboard.",
+        "copyFailed": "Could not copy the JSON.",
+        "exported": "JSON exported as editor-layout.json",
+        "selected": "Selected {id}"
+      }
+    }
+  }
+}

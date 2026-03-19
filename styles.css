@@ -97,6 +97,12 @@
         transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
       }
 
+      .pill-btn {
+        border-radius: 999px;
+        padding: 10px 14px;
+        box-shadow: 0 10px 22px rgba(0, 0, 0, 0.14);
+      }
+
       button:hover {
         transform: translateY(-1px);
       }
@@ -116,6 +122,22 @@
       button.danger {
         background: rgba(223, 91, 91, 0.16);
         border-color: rgba(223, 91, 91, 0.45);
+      }
+
+      .language-toggle {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        z-index: 30;
+        background: rgba(18, 24, 33, 0.94);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--text);
+        backdrop-filter: blur(14px);
+      }
+
+      .language-toggle[aria-pressed="true"] {
+        border-color: rgba(60, 130, 246, 0.75);
+        box-shadow: 0 14px 28px rgba(60, 130, 246, 0.18);
       }
 
       .canvas-wrap {
@@ -413,6 +435,13 @@
         display: flex;
         gap: 8px;
         flex-shrink: 0;
+      }
+
+      .project-actions .pill-btn,
+      #homeBtn.pill-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+        min-width: 88px;
       }
 
       /* Editor menu */

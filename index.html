@@ -64,21 +64,23 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <button id="languageToggle" class="language-toggle pill-btn" type="button">CASTELLANO | ENGLISH</button>
+
     <div id="homeView" class="home">
       <div class="home-shell">
-        <h1 class="home-title">perulainen | Layout Editor</h1>
-        <p class="hint">Tus proyectos se guardan localmente en este navegador (localStorage).</p>
+        <h1 class="home-title" data-i18n="home.title">perulainen | Layout Editor</h1>
+        <p class="hint" data-i18n="home.subtitle">Tus proyectos se guardan localmente en este navegador (localStorage).</p>
 
         <div class="toolbar home-actions">
           <label>
-            Nuevo proyecto
-            <input id="newProjectName" type="text" maxlength="80" placeholder="Ej. Landing V1" />
+            <span data-i18n="home.newProjectLabel">Nuevo proyecto</span>
+            <input id="newProjectName" type="text" maxlength="80" placeholder="Ej. Landing V1" data-i18n-placeholder="home.newProjectPlaceholder" />
           </label>
-          <button id="newProjectBtn" class="accent" type="button">Crear</button>
+          <button id="newProjectBtn" class="accent pill-btn" type="button" data-i18n="home.newProjectButton">Crear</button>
         </div>
 
         <section class="section">
-          <h3>Proyectos</h3>
+          <h3 data-i18n="home.projectsHeading">Proyectos</h3>
           <div id="projectList" class="project-list"></div>
         </section>
       </div>
@@ -88,20 +90,20 @@
       <main class="stage">
         <div class="menu-bar">
           <div class="menu-left">
-            <button id="homeBtn" type="button">Inicio</button>
+            <button id="homeBtn" class="pill-btn" type="button" data-i18n="editor.homeButton">Inicio</button>
             <div id="projectTitle" class="project-badge">Proyecto</div>
           </div>
         </div>
 
         <div class="toolbar">
           <label>
-            Grilla
+            <span data-i18n="editor.gridLabel">Grilla</span>
             <input id="gridInput" type="number" min="2" max="200" step="1" value="10" />
           </label>
-          <button id="createBtn" class="accent" type="button">Nueva instancia</button>
-          <button id="deleteBtn" class="danger" type="button">Eliminar</button>
-          <button id="exportBtn" type="button">Exportar JSON</button>
-          <button id="copyBtn" class="primary" type="button">Copiar JSON</button>
+          <button id="createBtn" class="accent pill-btn" type="button" data-i18n="editor.createButton">Nueva instancia</button>
+          <button id="deleteBtn" class="danger pill-btn" type="button" data-i18n="editor.deleteButton">Eliminar</button>
+          <button id="exportBtn" class="pill-btn" type="button" data-i18n="editor.exportButton">Exportar JSON</button>
+          <button id="copyBtn" class="primary pill-btn" type="button" data-i18n="editor.copyButton">Copiar JSON</button>
         </div>
 
         <div class="canvas-wrap">
@@ -120,89 +122,89 @@
 
       <aside class="sidebar">
         <section class="section">
-          <h3>Instancia Seleccionada</h3>
+          <h3 data-i18n="editor.selectionHeading">Instancia Seleccionada</h3>
           <div class="kv" id="selectionInfo">
-            <div>ID</div>
+            <div data-i18n="editor.selection.id">ID</div>
             <div>-</div>
-            <div>Label</div>
+            <div data-i18n="editor.selection.label">Label</div>
             <div>-</div>
-            <div>Notas</div>
+            <div data-i18n="editor.selection.notes">Notas</div>
             <div>-</div>
-            <div>Color</div>
+            <div data-i18n="editor.selection.color">Color</div>
             <div>-</div>
-            <div>X</div>
+            <div data-i18n="editor.selection.x">X</div>
             <div>-</div>
-            <div>Y</div>
+            <div data-i18n="editor.selection.y">Y</div>
             <div>-</div>
-            <div>Width</div>
+            <div data-i18n="editor.selection.width">Width</div>
             <div>-</div>
-            <div>Height</div>
+            <div data-i18n="editor.selection.height">Height</div>
             <div>-</div>
-            <div>Z</div>
+            <div data-i18n="editor.selection.z">Z</div>
             <div>-</div>
           </div>
         </section>
 
         <section class="section">
-          <h3>Propiedades</h3>
+          <h3 data-i18n="editor.propertiesHeading">Propiedades</h3>
           <div class="field full">
             <label class="field">
-              Label
-              <input id="labelInput" type="text" maxlength="120" placeholder="Ej. Hero" />
+              <span data-i18n="editor.fields.label">Label</span>
+              <input id="labelInput" type="text" maxlength="120" placeholder="Ej. Hero" data-i18n-placeholder="editor.placeholders.label" />
             </label>
           </div>
           <div class="field-grid">
             <label class="field">
-              X
+              <span data-i18n="editor.fields.x">X</span>
               <input id="xInput" type="number" step="1" />
             </label>
             <label class="field">
-              Y
+              <span data-i18n="editor.fields.y">Y</span>
               <input id="yInput" type="number" step="1" />
             </label>
             <label class="field">
-              Width
+              <span data-i18n="editor.fields.width">Width</span>
               <input id="widthInput" type="number" step="1" min="10" />
             </label>
             <label class="field">
-              Height
+              <span data-i18n="editor.fields.height">Height</span>
               <input id="heightInput" type="number" step="1" min="10" />
             </label>
             <label class="field full">
-              Z Order
+              <span data-i18n="editor.fields.z">Z Order</span>
               <input id="zInput" type="number" step="1" />
             </label>
             <label class="field full">
-              Color
+              <span data-i18n="editor.fields.color">Color</span>
               <input id="colorInput" class="color-input" type="color" value="#e8bf52" />
             </label>
             <label class="field full">
-              Notas
-              <textarea id="notesInput" rows="4" maxlength="4000" placeholder="Info para guiar a usuarios..."></textarea>
+              <span data-i18n="editor.fields.notes">Notas</span>
+              <textarea id="notesInput" rows="4" maxlength="4000" placeholder="Info para guiar a usuarios..." data-i18n-placeholder="editor.placeholders.notes"></textarea>
             </label>
           </div>
           <div class="selection-actions" style="margin-top:12px;">
-            <button id="bringForwardBtn" type="button">Subir</button>
-            <button id="sendBackwardBtn" type="button">Bajar</button>
+            <button id="bringForwardBtn" class="pill-btn" type="button" data-i18n="editor.bringForwardButton">Subir</button>
+            <button id="sendBackwardBtn" class="pill-btn" type="button" data-i18n="editor.sendBackwardButton">Bajar</button>
           </div>
         </section>
 
         <section class="section">
-          <h3>Capas</h3>
+          <h3 data-i18n="editor.layersHeading">Capas</h3>
           <div class="layer-actions">
-            <button id="sortAscBtn" type="button">Ordenar Z asc</button>
+            <button id="sortAscBtn" class="pill-btn" type="button" data-i18n="editor.sortAscButton">Ordenar Z asc</button>
           </div>
           <div id="layerList" class="layer-list" style="margin-top:12px;"></div>
         </section>
 
         <section class="section">
-          <h3>Atajos</h3>
-          <p class="hint">Click para seleccionar. Arrastrá para mover. Arrastrá los handles de las esquinas para cambiar width y height. El snap a grilla se aplica al mover y redimensionar.</p>
+          <h3 data-i18n="editor.shortcutsHeading">Atajos</h3>
+          <p class="hint" data-i18n="editor.shortcutsText">Click para seleccionar. Arrastrá para mover. Arrastrá los handles de las esquinas para cambiar width y height. El snap a grilla se aplica al mover y redimensionar.</p>
         </section>
 
         <section class="section">
-          <h3>JSON</h3>
-          <p class="hint">Se exporta un único documento con `version`, `canvas` e `instances`, listo para reconstruir el layout luego.</p>
+          <h3 data-i18n="editor.jsonHeading">JSON</h3>
+          <p class="hint" data-i18n="editor.jsonText">Se exporta un único documento con `version`, `canvas` e `instances`, listo para reconstruir el layout luego.</p>
         </section>
       </aside>
     </div>

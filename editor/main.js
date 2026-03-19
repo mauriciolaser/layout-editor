@@ -31,7 +31,7 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
-export function createEditor({ onBack, onDocumentChange } = {}) {
+export function createEditor({ onBack, onDocumentChange, ui: initialUi = {} } = {}) {
   const canvas = document.getElementById('editorCanvas');
   const ctx = canvas.getContext('2d');
   const gridInput = document.getElementById('gridInput');
@@ -58,6 +58,8 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
   const canvasMeta = document.getElementById('canvasMeta');
   const homeBtn = document.getElementById('homeBtn');
 
+  let ui = initialUi;
+
   const state = {
     grid: Number(gridInput?.value) || DEFAULT_GRID,
     document: createBlankDocument(),
@@ -68,6 +70,26 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
 
   function setStatus(text) {
     statusText.textContent = text;
+  }
+
+  function resolvePath(object, path) {
+    return path.split('.').reduce((acc, key) => (
+      acc && Object.prototype.hasOwnProperty.call(acc, key) ? acc[key] : undefined
+    ), object);
+  }
+
+  function fmt(template, values = {}) {
+    return String(template || '').replace(/\{(\w+)\}/g, (_, key) => (values[key] ?? ''));
+  }
+
+  function tr(path, fallback = '') {
+    const value = resolvePath(ui, path);
+    return typeof value === 'string' ? value : fallback;
+  }
+
+  function setLocale(nextUi) {
+    ui = nextUi || ui;
+    syncUi();
   }
 
   function getGridSize() {
@@ -208,12 +230,12 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
   }
 
   function updateMeta() {
-    canvasMeta.textContent = `Canvas: ${CANVAS_WIDTH} x ${CANVAS_HEIGHT}`;
-    instanceCountMeta.textContent = `Instancias: ${state.document.instances.length}`;
+    canvasMeta.textContent = `${tr('editor.meta.canvasPrefix', 'Canvas:')} ${CANVAS_WIDTH} x ${CANVAS_HEIGHT}`;
+    instanceCountMeta.textContent = `${tr('editor.meta.instancePrefix', 'Instances:')} ${state.document.instances.length}`;
     const selected = getSelectedInstance();
     selectionMeta.textContent = selected
-      ? `Seleccionada: ${selected.label || selected.id}`
-      : 'Seleccionada: ninguna';
+      ? `${tr('editor.meta.selectedPrefix', 'Selected:')} ${selected.label || selected.id}`
+      : tr('editor.meta.selectedNone', 'Selected: none');
   }
 
   function setInputsDisabled(disabled) {
@@ -295,7 +317,7 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
     if (instances.length === 0) {
       const empty = document.createElement('div');
       empty.className = 'hint';
-      empty.textContent = 'Todavia no hay instancias. Crea una para empezar.';
+      empty.textContent = tr('editor.layers.empty', 'There are no instances yet. Create one to get started.');
       layerList.appendChild(empty);
       return;
     }
@@ -336,7 +358,7 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
 
       item.addEventListener('click', () => {
         state.selectedId = instance.id;
-        setStatus(`Seleccionada ${instance.id}`);
+        setStatus(fmt(tr('editor.status.selected', 'Selected {id}'), { id: instance.id }));
         syncUi();
       });
 
@@ -501,7 +523,7 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
   function stopDrag() {
     if (!state.drag) return;
     state.drag = null;
-    setStatus('Cambios listos para exportar.');
+    setStatus(tr('editor.status.changesReady', 'Changes ready to export.'));
     syncUi();
     emitChange();
   }
@@ -518,7 +540,7 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
 
     const instance = {
       id: `instance_${String(nextIndex).padStart(3, '0')}`,
-      label: `Instance ${String(nextIndex).padStart(3, '0')}`,
+      label: `${tr('editor.instancePrefix', 'Instance')} ${String(nextIndex).padStart(3, '0')}`,
       notes: '',
       x: clamp(x, 0, CANVAS_WIDTH - DEFAULT_INSTANCE.width),
       y: clamp(y, 0, CANVAS_HEIGHT - DEFAULT_INSTANCE.height),
@@ -531,7 +553,7 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
 
     state.document.instances.push(instance);
     state.selectedId = instance.id;
-    setStatus(`Instancia creada: ${instance.id}`);
+    setStatus(fmt(tr('editor.status.instanceCreated', 'Instance created: {id}'), { id: instance.id }));
     syncUi();
     emitChange();
   }
@@ -541,7 +563,7 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
     if (!selected) return;
     state.document.instances = state.document.instances.filter((instance) => instance.id !== selected.id);
     state.selectedId = state.document.instances[0]?.id ?? null;
-    setStatus(`Instancia eliminada: ${selected.id}`);
+    setStatus(fmt(tr('editor.status.instanceDeleted', 'Instance deleted: {id}'), { id: selected.id }));
     syncUi();
     emitChange();
   }
@@ -552,7 +574,7 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
 
     if (key === 'label') {
       selected.label = String(rawValue || '').trim() || selected.id;
-      setStatus(`Label actualizado para ${selected.id}`);
+      setStatus(fmt(tr('editor.status.labelUpdated', 'Label updated for {id}'), { id: selected.id }));
       syncUi();
       emitChange();
       return;
@@ -560,7 +582,7 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
 
     if (key === 'notes') {
       selected.notes = String(rawValue || '').slice(0, 4000);
-      setStatus(`Notas actualizadas para ${selected.id}`);
+      setStatus(fmt(tr('editor.status.notesUpdated', 'Notes updated for {id}'), { id: selected.id }));
       syncUi();
       emitChange();
       return;
@@ -568,7 +590,7 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
 
     if (key === 'color') {
       selected.color = String(rawValue || '').trim() || DEFAULT_INSTANCE.color;
-      setStatus(`Color actualizado para ${selected.id}`);
+      setStatus(fmt(tr('editor.status.colorUpdated', 'Color updated for {id}'), { id: selected.id }));
       syncUi();
       emitChange();
       return;
@@ -600,7 +622,7 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
       selected.z = Math.round(numericValue);
     }
 
-    setStatus(`Propiedad ${key} actualizada.`);
+    setStatus(fmt(tr('editor.status.propertyUpdated', 'Property {key} updated.'), { key }));
     syncUi();
     emitChange();
   }
@@ -630,7 +652,9 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
       target._order = originalSelectedOrder;
     }
 
-    setStatus(direction === 'forward' ? 'Instancia subida.' : 'Instancia bajada.');
+    setStatus(direction === 'forward'
+      ? tr('editor.status.layerUp', 'Instance moved up.')
+      : tr('editor.status.layerDown', 'Instance moved down.'));
     syncUi();
     emitChange();
   }
@@ -640,7 +664,7 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
     sorted.forEach((instance, index) => {
       instance._order = index + 1;
     });
-    setStatus('Orden interno actualizado.');
+    setStatus(tr('editor.status.ordered', 'Internal order updated.'));
     syncUi();
     emitChange();
   }
@@ -656,15 +680,15 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
-    setStatus('JSON exportado como editor-layout.json');
+    setStatus(tr('editor.status.exported', 'JSON exported as editor-layout.json'));
   }
 
   async function copyJson() {
     try {
       await navigator.clipboard.writeText(JSON.stringify(exportDocument(), null, 2));
-      setStatus('JSON copiado al portapapeles.');
+      setStatus(tr('editor.status.copied', 'JSON copied to clipboard.'));
     } catch {
-      setStatus('No se pudo copiar el JSON.');
+      setStatus(tr('editor.status.copyFailed', 'Could not copy the JSON.'));
     }
   }
 
@@ -674,14 +698,14 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
 
     if (!hit) {
       state.selectedId = null;
-      setStatus('Sin seleccion.');
+      setStatus(tr('editor.status.noSelection', 'No selection.'));
       syncUi();
       return;
     }
 
     state.selectedId = hit.instance.id;
     startDrag(hit.instance, hit.mode, hit.handle, mouse);
-    setStatus(`Seleccionada ${hit.instance.id}`);
+    setStatus(fmt(tr('editor.status.selected', 'Selected {id}'), { id: hit.instance.id }));
     syncUi();
   }
 
@@ -761,7 +785,7 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
     state.document = normalizeIncomingDocument(doc);
     state.selectedId = state.document.instances[0]?.id ?? null;
     updateNextIdSeed();
-    setStatus('Proyecto cargado.');
+    setStatus(tr('editor.status.projectLoaded', 'Project loaded.'));
     // If the editor was initialized while hidden, recompute now.
     resizeCanvas();
     syncUi();
@@ -776,6 +800,7 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
     updateNextIdSeed();
     bindEvents();
     resizeCanvas();
+    setStatus(tr('editor.status.ready', 'Editor ready.'));
     syncUi();
   }
 
@@ -785,6 +810,7 @@ export function createEditor({ onBack, onDocumentChange } = {}) {
     loadDocument,
     newDocument,
     exportDocument,
+    setLocale,
     resize: () => {
       resizeCanvas();
       syncUi();

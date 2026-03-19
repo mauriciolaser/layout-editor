@@ -1,7 +1,7 @@
 # Editor De Instancias
 
 ## Resumen
-La aplicacion tiene una pantalla Home con proyectos guardados en `localStorage` y un editor 2D exportable como un unico JSON.
+La aplicacion tiene una pantalla Home con proyectos guardados en `localStorage`, selector de idioma (`CASTELLANO | ENGLISH`) y un editor 2D exportable como un unico JSON.
 Trabaja sobre un canvas fijo de `1920x1080` (`16:9`) y escala solo la vista, no las coordenadas del documento.
 
 ## Documento Exportado
@@ -42,6 +42,14 @@ Formato base:
 - `z`: orden de apilado; mayor valor significa mas arriba visualmente.
 - `color`: color hexadecimal usado para rellenar la instancia en el editor y preservado en el JSON.
 
+## Internacionalizacion
+- Los textos visibles de la UI viven en `data/ui.json`.
+- Idiomas soportados:
+  - `es`
+  - `en`
+- La pagina tiene un toggle fijo en la esquina superior derecha para cambiar entre castellano e ingles.
+- El idioma se persiste en `localStorage` para mantener la preferencia entre sesiones.
+
 ## Comportamiento Del Editor
 - `Nueva instancia`: crea un rectangulo nuevo con `label`, `z` y `id` autogenerados.
 - Seleccion: se puede hacer desde el canvas o desde la lista de capas.
@@ -61,6 +69,7 @@ Formato base:
 - Guardado:
   - Se auto-guarda el documento del proyecto al editar (debounce corto).
   - Los proyectos viven solo en el navegador actual.
+- `Abrir`, `Borrar` y `Inicio` tienen estilos tipo pill para una apariencia mas limpia y consistente.
 
 ## Navegacion
 - En el editor existe un menu con boton `Inicio` para volver a Home.
@@ -70,9 +79,11 @@ Formato base:
 - Si dos instancias tienen el mismo `z`, el editor usa el orden interno como desempate estable.
 - El array `instances` se exporta ordenado por `z` ascendente.
 - El color se guarda por instancia y no afecta dimensiones ni orden.
+- `data/ui.json` es la fuente de verdad para textos y placeholders traducidos.
 
 ## Archivos Relevantes
 - `index.html`: shell visual (Home + Editor).
 - `styles.css`: estilos (CSS separado del HTML).
 - `main.js`: Home, proyectos en `localStorage`, navegacion y analytics.
+- `data/ui.json`: catalogo de UI en castellano e ingles.
 - `editor/main.js`: editor (estado, render, interaccion, export JSON).

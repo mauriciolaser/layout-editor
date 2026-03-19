@@ -30,6 +30,7 @@ jobs:
           cp main.js deploy_staging/main.js
           cp styles.css deploy_staging/styles.css
           cp -a editor deploy_staging/editor
+          cp -a data deploy_staging/data
 
           # Optional: inject GA_ID into main.js (if configured as a GitHub secret)
           GA_ID="${{ secrets.GA_ID }}"

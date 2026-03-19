@@ -1,23 +1,23 @@
 import { createBlankDocument, createEditor } from './editor/main.js';
 
 const STORAGE_KEY = 'perulainen.layoutEditor.projects.v1';
+const LANG_KEY = 'perulainen.layoutEditor.lang.v1';
 
-function initAnalytics() {
-  const GA_ID = '__GA_ID__';
-  if (!GA_ID || GA_ID === '__GA_ID__') return;
+const els = {
+  homeView: document.getElementById('homeView'),
+  editorView: document.getElementById('editorView'),
+  newProjectName: document.getElementById('newProjectName'),
+  newProjectBtn: document.getElementById('newProjectBtn'),
+  projectList: document.getElementById('projectList'),
+  projectTitle: document.getElementById('projectTitle'),
+  languageToggle: document.getElementById('languageToggle'),
+};
 
-  const s = document.createElement('script');
-  s.async = true;
-  s.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_ID)}`;
-  document.head.appendChild(s);
-
-  window.dataLayer = window.dataLayer || [];
-  function gtag() {
-    window.dataLayer.push(arguments);
-  }
-  gtag('js', new Date());
-  gtag('config', GA_ID);
-}
+let uiCatalog = null;
+let currentLang = localStorage.getItem(LANG_KEY) || 'es';
+let projects = loadProjects();
+let currentProjectId = null;
+let editor = null;
 
 function loadProjects() {
   try {
@@ -29,13 +29,100 @@ function loadProjects() {
   }
 }
 
-function saveProjects(projects) {
+function saveProjects(nextProjects) {
+  projects = nextProjects;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+}
+
+function loadUiCatalog() {
+  return fetch('./data/ui.json', { cache: 'no-store' }).then(async (response) => {
+    if (!response.ok) {
+      throw new Error(`Unable to load UI catalog: ${response.status}`);
+    }
+    return response.json();
+  });
+}
+
+function resolvePath(object, path) {
+  return path.split('.').reduce((acc, key) => (acc && Object.prototype.hasOwnProperty.call(acc, key) ? acc[key] : undefined), object);
+}
+
+function currentLocale() {
+  return uiCatalog?.[currentLang] || uiCatalog?.es || null;
+}
+
+function t(path) {
+  const locale = currentLocale();
+  const value = locale ? resolvePath(locale, path) : undefined;
+  return typeof value === 'string' ? value : '';
+}
+
+function format(template, values = {}) {
+  return String(template || '').replace(/\{(\w+)\}/g, (_, key) => (values[key] ?? ''));
+}
+
+function setMeta(name, content) {
+  const el = document.querySelector(`meta[name="${name}"]`);
+  if (el) el.setAttribute('content', content);
+}
+
+function setPropertyMeta(property, content) {
+  const el = document.querySelector(`meta[property="${property}"]`);
+  if (el) el.setAttribute('content', content);
+}
+
+function applyLocaleToDom() {
+  const locale = currentLocale();
+  if (!locale) return;
+
+  document.documentElement.lang = currentLang;
+  document.title = t('meta.title');
+  setMeta('description', t('meta.description'));
+  setMeta('keywords', t('meta.keywords'));
+  setMeta('theme-color', '#0b0d12');
+  setPropertyMeta('og:title', t('meta.title'));
+  setPropertyMeta('og:description', t('meta.description'));
+  setPropertyMeta('og:site_name', t('meta.siteName'));
+  setMeta('twitter:title', t('meta.title'));
+  setMeta('twitter:description', t('meta.description'));
+
+  document.querySelectorAll('[data-i18n]').forEach((node) => {
+    const value = resolvePath(locale, node.dataset.i18n);
+    if (typeof value === 'string') {
+      node.textContent = value;
+    }
+  });
+
+  document.querySelectorAll('[data-i18n-placeholder]').forEach((node) => {
+    const value = resolvePath(locale, node.dataset.i18nPlaceholder);
+    if (typeof value === 'string') {
+      node.setAttribute('placeholder', value);
+    }
+  });
+
+  if (els.languageToggle) {
+    els.languageToggle.setAttribute('aria-pressed', currentLang === 'en' ? 'true' : 'false');
+  }
+
+  if (editor) {
+    editor.setLocale(locale.editor);
+  }
+
+  renderProjectList();
+
+  if (currentProjectId) {
+    const project = getProjectById(currentProjectId);
+    if (project) {
+      els.projectTitle.textContent = project.name;
+    }
+  } else {
+    els.projectTitle.textContent = t('editor.projectBadge');
+  }
 }
 
 function formatDate(ts) {
   try {
-    return new Date(ts).toLocaleString();
+    return new Date(ts).toLocaleString(currentLang === 'en' ? 'en-US' : 'es-ES');
   } catch {
     return '';
   }
@@ -46,58 +133,28 @@ function makeProjectId() {
   return `proj_${Date.now()}_${rand}`;
 }
 
-const els = {
-  homeView: document.getElementById('homeView'),
-  editorView: document.getElementById('editorView'),
-  newProjectName: document.getElementById('newProjectName'),
-  newProjectBtn: document.getElementById('newProjectBtn'),
-  projectList: document.getElementById('projectList'),
-  projectTitle: document.getElementById('projectTitle'),
-};
-
-let projects = loadProjects();
-let currentProjectId = null;
-
-function showHome() {
-  currentProjectId = null;
-  els.editorView.classList.add('is-hidden');
-  els.homeView.classList.remove('is-hidden');
-  renderProjectList();
-}
-
-function showEditor(project) {
-  els.projectTitle.textContent = project?.name || 'Proyecto';
-  els.homeView.classList.add('is-hidden');
-  els.editorView.classList.remove('is-hidden');
-  // The editor may have been initialized while hidden; resize after it becomes visible.
-  window.requestAnimationFrame(() => editor.resize());
-}
-
 function getProjectById(id) {
-  return projects.find((p) => p.id === id) || null;
+  return projects.find((project) => project.id === id) || null;
 }
 
 function updateProject(updated) {
-  projects = projects.map((p) => (p.id === updated.id ? updated : p));
-  saveProjects(projects);
+  saveProjects(projects.map((project) => (project.id === updated.id ? updated : project)));
 }
 
 function createProject(name) {
-  const id = makeProjectId();
   const project = {
-    id,
-    name: String(name || '').trim() || 'Nuevo proyecto',
+    id: makeProjectId(),
+    name: String(name || '').trim() || t('home.defaultProjectName'),
     updatedAt: Date.now(),
     document: createBlankDocument(),
   };
-  projects = [project, ...projects];
-  saveProjects(projects);
+
+  saveProjects([project, ...projects]);
   return project;
 }
 
 function deleteProject(id) {
-  projects = projects.filter((p) => p.id !== id);
-  saveProjects(projects);
+  saveProjects(projects.filter((project) => project.id !== id));
 }
 
 function renderProjectList() {
@@ -106,7 +163,7 @@ function renderProjectList() {
   if (!projects.length) {
     const empty = document.createElement('p');
     empty.className = 'hint';
-    empty.textContent = 'Todavia no hay proyectos. Crea uno para empezar.';
+    empty.textContent = t('home.emptyProjects');
     els.projectList.appendChild(empty);
     return;
   }
@@ -124,23 +181,23 @@ function renderProjectList() {
 
     const meta = document.createElement('div');
     meta.className = 'project-meta';
-    meta.textContent = `Actualizado: ${formatDate(project.updatedAt)}`;
+    meta.textContent = `${t('home.updatedPrefix')} ${formatDate(project.updatedAt)}`;
 
     const actions = document.createElement('div');
     actions.className = 'project-actions';
 
     const openBtn = document.createElement('button');
     openBtn.type = 'button';
-    openBtn.className = 'primary';
-    openBtn.textContent = 'Abrir';
+    openBtn.className = 'primary pill-btn';
+    openBtn.textContent = t('home.openButton');
     openBtn.addEventListener('click', () => openProject(project.id));
 
     const delBtn = document.createElement('button');
     delBtn.type = 'button';
-    delBtn.className = 'danger';
-    delBtn.textContent = 'Borrar';
+    delBtn.className = 'danger pill-btn';
+    delBtn.textContent = t('home.deleteButton');
     delBtn.addEventListener('click', () => {
-      const ok = window.confirm(`Borrar proyecto "${project.name}"?`);
+      const ok = window.confirm(format(t('home.confirmDeleteProject'), { name: project.name }));
       if (!ok) return;
       deleteProject(project.id);
       renderProjectList();
@@ -168,10 +225,18 @@ function scheduleSave(projectId, doc) {
   }, 250);
 }
 
-const editor = createEditor({
-  onBack: showHome,
-  onDocumentChange: (doc) => scheduleSave(currentProjectId, doc),
-});
+function showHome() {
+  currentProjectId = null;
+  els.editorView.classList.add('is-hidden');
+  els.homeView.classList.remove('is-hidden');
+  renderProjectList();
+}
+
+function showEditor(project) {
+  els.projectTitle.textContent = project?.name || t('editor.projectBadge');
+  els.homeView.classList.add('is-hidden');
+  els.editorView.classList.remove('is-hidden');
+}
 
 function openProject(id) {
   const project = getProjectById(id);
@@ -179,10 +244,9 @@ function openProject(id) {
   currentProjectId = id;
   showEditor(project);
   editor.loadDocument(project.document);
-  window.requestAnimationFrame(() => editor.resize());
 }
 
-function bindHome() {
+function bindEvents() {
   els.newProjectBtn.addEventListener('click', () => {
     const name = els.newProjectName.value;
     els.newProjectName.value = '';
@@ -190,17 +254,34 @@ function bindHome() {
     openProject(project.id);
   });
 
-  els.newProjectName.addEventListener('keydown', (e) => {
-    if (e.key !== 'Enter') return;
+  els.newProjectName.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter') return;
     els.newProjectBtn.click();
+  });
+
+  els.languageToggle.addEventListener('click', () => {
+    currentLang = currentLang === 'es' ? 'en' : 'es';
+    localStorage.setItem(LANG_KEY, currentLang);
+    applyLocaleToDom();
   });
 }
 
-function init() {
-  initAnalytics();
-  bindHome();
-  renderProjectList();
+async function init() {
+  uiCatalog = await loadUiCatalog();
+  currentLang = uiCatalog[currentLang] ? currentLang : 'es';
+
+  editor = createEditor({
+    onBack: showHome,
+    onDocumentChange: (doc) => scheduleSave(currentProjectId, doc),
+    ui: uiCatalog[currentLang].editor,
+  });
+
+  bindEvents();
+  applyLocaleToDom();
   showHome();
 }
 
-init();
+init().catch((error) => {
+  console.error(error);
+  document.body.innerHTML = '<pre style="padding:20px;color:#fff;background:#0b0d12">Failed to load application UI.</pre>';
+});
