@@ -54,6 +54,10 @@ jobs:
             fi
           done
 
+          if [ -f logo.png ]; then
+            cp logo.png deploy_staging/logo.png
+          fi
+
           # Social preview image
           if [ -f banner.webp ]; then
             cp banner.webp deploy_staging/banner.webp

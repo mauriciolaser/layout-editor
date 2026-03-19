@@ -64,11 +64,19 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <button id="languageToggle" class="language-toggle pill-btn" type="button">CASTELLANO | ENGLISH</button>
+    <nav class="topbar" aria-label="Primary">
+      <div class="topbar-brand">
+        <img class="topbar-logo" src="./logo.png" alt="perulainen" />
+        <div class="topbar-copy">
+          <div class="topbar-name" data-i18n="home.title">perulainen | Layout Editor</div>
+        </div>
+      </div>
+
+      <button id="languageToggle" class="language-toggle pill-btn" type="button">CASTELLANO | ENGLISH</button>
+    </nav>
 
     <div id="homeView" class="home">
       <div class="home-shell">
-        <h1 class="home-title" data-i18n="home.title">perulainen | Layout Editor</h1>
         <p class="hint" data-i18n="home.subtitle">Tus proyectos se guardan localmente en este navegador (localStorage).</p>
 
         <div class="toolbar home-actions">

@@ -124,15 +124,57 @@
         border-color: rgba(223, 91, 91, 0.45);
       }
 
+      .topbar {
+        margin: 16px 16px 0;
+        padding: 10px 14px;
+        min-height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        background: rgba(18, 24, 33, 0.92);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 18px;
+        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(12px);
+      }
+
+      .topbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .topbar-logo {
+        display: block;
+        width: auto;
+        max-width: 64px;
+        max-height: 64px;
+        object-fit: contain;
+        flex: 0 0 auto;
+      }
+
+      .topbar-copy {
+        min-width: 0;
+      }
+
+      .topbar-name {
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
       .language-toggle {
-        position: fixed;
-        top: 16px;
-        right: 16px;
-        z-index: 30;
         background: rgba(18, 24, 33, 0.94);
         border: 1px solid rgba(255, 255, 255, 0.08);
         color: var(--text);
         backdrop-filter: blur(14px);
+        white-space: nowrap;
       }
 
       .language-toggle[aria-pressed="true"] {
@@ -348,6 +390,25 @@
       }
 
       @media (max-width: 520px) {
+        .topbar {
+          margin: 12px 12px 0;
+          padding: 10px 12px;
+          gap: 10px;
+        }
+
+        .topbar-logo {
+          max-width: 52px;
+          max-height: 52px;
+        }
+
+        .topbar-name {
+          font-size: 12px;
+        }
+
+        .language-toggle {
+          padding: 8px 10px;
+        }
+
         .field-grid {
           grid-template-columns: 1fr;
         }
@@ -365,7 +426,7 @@
       /* Home */
       .home {
         min-height: 100vh;
-        padding: 26px 20px;
+        padding: 16px 20px 26px;
         display: grid;
         place-items: start center;
       }

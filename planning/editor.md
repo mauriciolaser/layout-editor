@@ -47,7 +47,7 @@ Formato base:
 - Idiomas soportados:
   - `es`
   - `en`
-- La pagina tiene un toggle fijo en la esquina superior derecha para cambiar entre castellano e ingles.
+- La pagina tiene una navbar superior con el logo y un toggle para cambiar entre castellano e ingles.
 - El idioma se persiste en `localStorage` para mantener la preferencia entre sesiones.
 
 ## Comportamiento Del Editor
@@ -73,6 +73,7 @@ Formato base:
 
 ## Navegacion
 - En el editor existe un menu con boton `Inicio` para volver a Home.
+- La parte superior de la app usa una navbar compartida con `logo.png` y el selector de idioma.
 
 ## Notas De Implementacion
 - El hit-testing del canvas prioriza la instancia con mayor `z`.
