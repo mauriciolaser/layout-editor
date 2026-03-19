@@ -1,7 +1,7 @@
 # Editor De Instancias
 
 ## Resumen
-El editor en `editor.html` permite construir un layout 2D exportable como un unico JSON.
+El editor en `index.html` permite construir un layout 2D exportable como un unico JSON.
 Trabaja sobre un canvas fijo de `1920x1080` (`16:9`) y escala solo la vista, no las coordenadas del documento.
 
 ## Documento Exportado
@@ -57,5 +57,5 @@ Formato base:
 - El color se guarda por instancia y no afecta dimensiones ni orden.
 
 ## Archivos Relevantes
-- `editor.html`: shell visual y controles del editor.
-- `src/editor/main.js`: estado, render, interaccion y export JSON.
+- `index.html`: shell visual y controles del editor.
+- `editor/main.js`: estado, render, interaccion y export JSON.

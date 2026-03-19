@@ -1,0 +1,45 @@
+# .github/workflows/deploy.yml
+# ------------------------------------------------------------
+# ► Despliegue manual (workflow_dispatch) vía FTP
+# ► Proyecto estático (sin build): sube index.html + editor/
+# ------------------------------------------------------------
+
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Inicio del workflow
+        run: echo "Comenzando deploy por FTP..."
+
+      - name: Checkout codigo
+        uses: actions/checkout@v4
+
+      - name: Preparar staging
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf deploy_staging
+          mkdir -p deploy_staging
+          cp index.html deploy_staging/index.html
+          cp -a editor deploy_staging/editor
+
+      - name: Upload via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          local-dir: deploy_staging/
+          server-dir: ${{ secrets.FTP_DESTINATION }}
+          dangerous-clean-slate: false
+
+      - name: Fin del workflow
+        run: echo "Deploy completado."
