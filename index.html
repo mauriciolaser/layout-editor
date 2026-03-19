@@ -114,8 +114,10 @@
           </label>
           <button id="createBtn" class="accent pill-btn" type="button" data-i18n="editor.createButton">Nueva instancia</button>
           <button id="deleteBtn" class="danger pill-btn" type="button" data-i18n="editor.deleteButton">Eliminar</button>
+          <button id="importBtn" class="pill-btn" type="button" data-i18n="editor.importButton">Importar JSON</button>
           <button id="exportBtn" class="pill-btn" type="button" data-i18n="editor.exportButton">Exportar JSON</button>
           <button id="copyBtn" class="primary pill-btn" type="button" data-i18n="editor.copyButton">Copiar JSON</button>
+          <input id="importFileInput" type="file" accept=".json,application/json" hidden />
         </div>
 
         <div class="canvas-wrap">
@@ -216,7 +218,7 @@
 
         <section class="section">
           <h3 data-i18n="editor.jsonHeading">JSON</h3>
-          <p class="hint" data-i18n="editor.jsonText">Se exporta un único documento con `version`, `canvas` e `instances`, listo para reconstruir el layout luego.</p>
+          <p class="hint" data-i18n="editor.jsonText">Se exporta un único documento con `version`, `canvas` e `instances`, listo para reconstruir el layout luego. También podés importarlo desde otro equipo para reemplazar el layout actual del proyecto abierto.</p>
         </section>
       </aside>
     </div>

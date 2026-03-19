@@ -37,6 +37,8 @@ export function createEditor({ onBack, onDocumentChange, ui: initialUi = {} } = 
   const gridInput = document.getElementById('gridInput');
   const createBtn = document.getElementById('createBtn');
   const deleteBtn = document.getElementById('deleteBtn');
+  const importBtn = document.getElementById('importBtn');
+  const importFileInput = document.getElementById('importFileInput');
   const exportBtn = document.getElementById('exportBtn');
   const copyBtn = document.getElementById('copyBtn');
   const statusText = document.getElementById('statusText');
@@ -683,6 +685,58 @@ export function createEditor({ onBack, onDocumentChange, ui: initialUi = {} } = 
     setStatus(tr('editor.status.exported', 'JSON exported as editor-layout.json'));
   }
 
+  function isLikelyEditorDocument(doc) {
+    return !!(
+      doc &&
+      typeof doc === 'object' &&
+      !Array.isArray(doc) &&
+      doc.canvas &&
+      typeof doc.canvas === 'object' &&
+      Array.isArray(doc.instances)
+    );
+  }
+
+  async function importJsonFile(file) {
+    if (!file) {
+      setStatus(tr('editor.status.importCancelled', 'Import cancelled.'));
+      return;
+    }
+
+    try {
+      const raw = await file.text();
+      const parsed = JSON.parse(raw);
+
+      if (!isLikelyEditorDocument(parsed)) {
+        setStatus(tr('editor.status.importWrongFormat', 'The file does not contain a valid editor document.'));
+        return;
+      }
+
+      loadDocument(parsed, {
+        status: tr('editor.status.imported', 'JSON imported successfully.'),
+      });
+    } catch {
+      setStatus(tr('editor.status.importInvalid', 'The JSON could not be imported.'));
+    } finally {
+      importFileInput.value = '';
+    }
+  }
+
+  function requestImport() {
+    const shouldReplace = window.confirm(
+      tr(
+        'editor.confirm.replaceDocument',
+        'Importing this JSON will replace the current layout in the open project. Continue?',
+      ),
+    );
+
+    if (!shouldReplace) {
+      setStatus(tr('editor.status.importCancelled', 'Import cancelled.'));
+      return;
+    }
+
+    importFileInput.click();
+  }
+
   async function copyJson() {
     try {
       await navigator.clipboard.writeText(JSON.stringify(exportDocument(), null, 2));
@@ -722,6 +776,7 @@ export function createEditor({ onBack, onDocumentChange, ui: initialUi = {} } = 
 
     createBtn.addEventListener('click', createInstance);
     deleteBtn.addEventListener('click', removeSelectedInstance);
+    importBtn.addEventListener('click', requestImport);
     exportBtn.addEventListener('click', downloadJson);
     copyBtn.addEventListener('click', copyJson);
     bringForwardBtn.addEventListener('click', () => moveSelectedLayer('forward'));
@@ -736,6 +791,10 @@ export function createEditor({ onBack, onDocumentChange, ui: initialUi = {} } = 
     heightInput.addEventListener('change', (event) => updateSelectedProperty('height', event.target.value));
     zInput.addEventListener('change', (event) => updateSelectedProperty('z', event.target.value));
     colorInput.addEventListener('input', (event) => updateSelectedProperty('color', event.target.value));
+    importFileInput.addEventListener('change', (event) => {
+      const [file] = event.target.files || [];
+      importJsonFile(file);
+    });
 
     canvas.addEventListener('mousedown', handlePointerDown);
     canvas.addEventListener('mousemove', handlePointerMove);
@@ -781,11 +840,11 @@ export function createEditor({ onBack, onDocumentChange, ui: initialUi = {} } = 
     };
   }
 
-  function loadDocument(doc) {
+  function loadDocument(doc, options = {}) {
     state.document = normalizeIncomingDocument(doc);
     state.selectedId = state.document.instances[0]?.id ?? null;
     updateNextIdSeed();
-    setStatus(tr('editor.status.projectLoaded', 'Project loaded.'));
+    setStatus(options.status || tr('editor.status.projectLoaded', 'Project loaded.'));
     // If the editor was initialized while hidden, recompute now.
     resizeCanvas();
     syncUi();

@@ -31,6 +31,7 @@
       "gridLabel": "Grilla",
       "createButton": "Nueva instancia",
       "deleteButton": "Eliminar",
+      "importButton": "Importar JSON",
       "exportButton": "Exportar JSON",
       "copyButton": "Copiar JSON",
       "selectionHeading": "Instancia Seleccionada",
@@ -68,7 +69,7 @@
       "shortcutsHeading": "Atajos",
       "shortcutsText": "Click para seleccionar. Arrastrá para mover. Arrastrá los handles de las esquinas para cambiar width y height. El snap a grilla se aplica al mover y redimensionar.",
       "jsonHeading": "JSON",
-      "jsonText": "Se exporta un unico documento con `version`, `canvas` e `instances`, listo para reconstruir el layout luego.",
+      "jsonText": "Se exporta un unico documento con `version`, `canvas` e `instances`, listo para reconstruir el layout luego. Tambien podes importarlo desde otro equipo para reemplazar el layout actual del proyecto abierto.",
       "meta": {
         "canvasPrefix": "Canvas:",
         "instancePrefix": "Instancias:",
@@ -90,10 +91,17 @@
         "colorUpdated": "Color actualizado para {id}",
         "propertyUpdated": "Propiedad {key} actualizada.",
         "ordered": "Orden interno actualizado.",
+        "imported": "JSON importado correctamente.",
+        "importCancelled": "Importacion cancelada.",
+        "importInvalid": "No se pudo importar el JSON.",
+        "importWrongFormat": "El archivo no contiene un documento valido del editor.",
         "copied": "JSON copiado al portapapeles.",
         "copyFailed": "No se pudo copiar el JSON.",
         "exported": "JSON exportado como editor-layout.json",
         "selected": "Seleccionada {id}"
+      },
+      "confirm": {
+        "replaceDocument": "Importar este JSON reemplazara el layout actual del proyecto abierto. Continuar?"
       }
     },
     "about": {
@@ -135,6 +143,7 @@
       "gridLabel": "Grid",
       "createButton": "New instance",
       "deleteButton": "Delete",
+      "importButton": "Import JSON",
       "exportButton": "Export JSON",
       "copyButton": "Copy JSON",
       "selectionHeading": "Selected Instance",
@@ -172,7 +181,7 @@
       "shortcutsHeading": "Shortcuts",
       "shortcutsText": "Click to select. Drag to move. Drag the corner handles to change width and height. Grid snapping applies while moving and resizing.",
       "jsonHeading": "JSON",
-      "jsonText": "A single document is exported with `version`, `canvas`, and `instances`, ready to rebuild the layout later.",
+      "jsonText": "A single document is exported with `version`, `canvas`, and `instances`, ready to rebuild the layout later. You can also import it from another machine to replace the current layout in the open project.",
       "meta": {
         "canvasPrefix": "Canvas:",
         "instancePrefix": "Instances:",
@@ -194,10 +203,17 @@
         "colorUpdated": "Color updated for {id}",
         "propertyUpdated": "Property {key} updated.",
         "ordered": "Internal order updated.",
+        "imported": "JSON imported successfully.",
+        "importCancelled": "Import cancelled.",
+        "importInvalid": "The JSON could not be imported.",
+        "importWrongFormat": "The file does not contain a valid editor document.",
         "copied": "JSON copied to clipboard.",
         "copyFailed": "Could not copy the JSON.",
         "exported": "JSON exported as editor-layout.json",
         "selected": "Selected {id}"
+      },
+      "confirm": {
+        "replaceDocument": "Importing this JSON will replace the current layout in the open project. Continue?"
       }
     },
     "about": {
