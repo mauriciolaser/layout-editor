@@ -1,4 +1,4 @@
-# Game Editor (Static)
+# Layout Editor (Static)
 
 Editor de instancias 2D (canvas `1920x1080`) exportable como JSON.
 
