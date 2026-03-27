@@ -2,7 +2,7 @@
   "es": {
     "meta": {
       "title": "perulainen | Layout Editor",
-      "description": "Editor 2D para construir layouts exportables como JSON sobre un canvas 1920x1080.",
+      "description": "Editor 2D para construir layouts exportables como JSON en canvas 1920x1080 y 1080x1920.",
       "keywords": "perulainen, layout editor, editor 2D, canvas, instancias, JSON, level editor",
       "siteName": "perulainen"
     },
@@ -11,10 +11,16 @@
       "subtitle": "Tus proyectos se guardan localmente en este navegador (localStorage).",
       "newProjectLabel": "Nuevo proyecto",
       "newProjectPlaceholder": "Ej. Landing V1",
+      "canvasPresetLabel": "Canvas",
+      "canvasPresets": {
+        "landscapeFhd": "Landscape 1920 x 1080 (16:9)",
+        "portraitFhd": "Portrait 1080 x 1920 (9:16)"
+      },
       "newProjectButton": "Crear",
       "projectsHeading": "Proyectos",
       "emptyProjects": "Todavia no hay proyectos. Crea uno para empezar.",
       "updatedPrefix": "Actualizado:",
+      "canvasMetaPrefix": "Canvas:",
       "openButton": "Abrir",
       "deleteButton": "Borrar",
       "confirmDeleteProject": "Borrar proyecto \"{name}\"?",
@@ -95,10 +101,13 @@
         "importCancelled": "Importacion cancelada.",
         "importInvalid": "No se pudo importar el JSON.",
         "importWrongFormat": "El archivo no contiene un documento valido del editor.",
+        "importWrongVersion": "El JSON tiene una version no soportada por este editor.",
+        "importUnsupportedCanvas": "El JSON usa un canvas no soportado por este editor.",
         "copied": "JSON copiado al portapapeles.",
         "copyFailed": "No se pudo copiar el JSON.",
         "exported": "JSON exportado como editor-layout.json",
-        "selected": "Seleccionada {id}"
+        "selected": "Seleccionada {id}",
+        "projectMigrated": "Proyecto legado migrado automaticamente a JSON v2."
       },
       "confirm": {
         "replaceDocument": "Importar este JSON reemplazara el layout actual del proyecto abierto. Continuar?"
@@ -114,7 +123,7 @@
   "en": {
     "meta": {
       "title": "perulainen | Layout Editor",
-      "description": "2D editor for building JSON-exportable layouts on a 1920x1080 canvas.",
+      "description": "2D editor for building JSON-exportable layouts on 1920x1080 and 1080x1920 canvases.",
       "keywords": "perulainen, layout editor, 2D editor, canvas, instances, JSON, level editor",
       "siteName": "perulainen"
     },
@@ -123,10 +132,16 @@
       "subtitle": "Your projects are saved locally in this browser (localStorage).",
       "newProjectLabel": "New project",
       "newProjectPlaceholder": "E.g. Landing V1",
+      "canvasPresetLabel": "Canvas",
+      "canvasPresets": {
+        "landscapeFhd": "Landscape 1920 x 1080 (16:9)",
+        "portraitFhd": "Portrait 1080 x 1920 (9:16)"
+      },
       "newProjectButton": "Create",
       "projectsHeading": "Projects",
       "emptyProjects": "There are no projects yet. Create one to get started.",
       "updatedPrefix": "Updated:",
+      "canvasMetaPrefix": "Canvas:",
       "openButton": "Open",
       "deleteButton": "Delete",
       "confirmDeleteProject": "Delete project \"{name}\"?",
@@ -207,10 +222,13 @@
         "importCancelled": "Import cancelled.",
         "importInvalid": "The JSON could not be imported.",
         "importWrongFormat": "The file does not contain a valid editor document.",
+        "importWrongVersion": "The JSON version is not supported by this editor.",
+        "importUnsupportedCanvas": "The JSON canvas is not supported by this editor.",
         "copied": "JSON copied to clipboard.",
         "copyFailed": "Could not copy the JSON.",
         "exported": "JSON exported as editor-layout.json",
-        "selected": "Selected {id}"
+        "selected": "Selected {id}",
+        "projectMigrated": "Legacy project migrated automatically to JSON v2."
       },
       "confirm": {
         "replaceDocument": "Importing this JSON will replace the current layout in the open project. Continue?"

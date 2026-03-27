@@ -6,7 +6,7 @@
     <title>perulainen | Layout Editor</title>
     <meta
       name="description"
-      content="Editor 2D para construir layouts exportables como JSON sobre un canvas 1920x1080."
+      content="Editor 2D para construir layouts exportables como JSON en canvas 1920x1080 y 1080x1920."
     />
     <meta
       name="keywords"
@@ -18,7 +18,7 @@
     <meta property="og:title" content="perulainen | Layout Editor" />
     <meta
       property="og:description"
-      content="Editor 2D para construir layouts exportables como JSON sobre un canvas 1920x1080."
+      content="Editor 2D para construir layouts exportables como JSON en canvas 1920x1080 y 1080x1920."
     />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="perulainen" />
@@ -29,7 +29,7 @@
     <meta name="twitter:title" content="perulainen | Layout Editor" />
     <meta
       name="twitter:description"
-      content="Editor 2D para construir layouts exportables como JSON sobre un canvas 1920x1080."
+      content="Editor 2D para construir layouts exportables como JSON en canvas 1920x1080 y 1080x1920."
     />
     <meta name="twitter:image" content="./banner.webp" />
 
@@ -88,6 +88,13 @@
           <label>
             <span data-i18n="home.newProjectLabel">Nuevo proyecto</span>
             <input id="newProjectName" type="text" maxlength="80" placeholder="Ej. Landing V1" data-i18n-placeholder="home.newProjectPlaceholder" />
+          </label>
+          <label>
+            <span data-i18n="home.canvasPresetLabel">Canvas</span>
+            <select id="canvasPresetSelect">
+              <option value="landscape_fhd" data-i18n="home.canvasPresets.landscapeFhd">Landscape 1920 x 1080 (16:9)</option>
+              <option value="portrait_fhd" data-i18n="home.canvasPresets.portraitFhd">Portrait 1080 x 1920 (9:16)</option>
+            </select>
           </label>
           <button id="newProjectBtn" class="accent pill-btn" type="button" data-i18n="home.newProjectButton">Crear</button>
         </div>

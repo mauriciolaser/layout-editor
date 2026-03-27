@@ -1,4 +1,4 @@
-import { createBlankDocument, createEditor } from './editor/main.js';
+import { createBlankDocument, createEditor, getCanvasPreset, DEFAULT_CANVAS_PRESET_ID } from './editor/main.js';
 
 const STORAGE_KEY = 'perulainen.layoutEditor.projects.v1';
 const LANG_KEY = 'perulainen.layoutEditor.lang.v1';
@@ -7,6 +7,7 @@ const els = {
   homeView: document.getElementById('homeView'),
   editorView: document.getElementById('editorView'),
   newProjectName: document.getElementById('newProjectName'),
+  canvasPresetSelect: document.getElementById('canvasPresetSelect'),
   newProjectBtn: document.getElementById('newProjectBtn'),
   projectList: document.getElementById('projectList'),
   projectTitle: document.getElementById('projectTitle'),
@@ -145,12 +146,12 @@ function updateProject(updated) {
   saveProjects(projects.map((project) => (project.id === updated.id ? updated : project)));
 }
 
-function createProject(name) {
+function createProject(name, presetId) {
   const project = {
     id: makeProjectId(),
     name: String(name || '').trim() || t('home.defaultProjectName'),
     updatedAt: Date.now(),
-    document: createBlankDocument(),
+    document: createBlankDocument(presetId),
   };
 
   saveProjects([project, ...projects]);
@@ -185,7 +186,13 @@ function renderProjectList() {
 
     const meta = document.createElement('div');
     meta.className = 'project-meta';
-    meta.textContent = `${t('home.updatedPrefix')} ${formatDate(project.updatedAt)}`;
+    const canvas = project?.document?.canvas || {};
+    const presetCanvas = getCanvasPreset(DEFAULT_CANVAS_PRESET_ID);
+    const width = Number(canvas.width) || presetCanvas.width;
+    const height = Number(canvas.height) || presetCanvas.height;
+    const updatedText = `${t('home.updatedPrefix')} ${formatDate(project.updatedAt)}`;
+    const canvasText = `${t('home.canvasMetaPrefix')} ${width} x ${height}`;
+    meta.textContent = `${updatedText} · ${canvasText}`;
 
     const actions = document.createElement('div');
     actions.className = 'project-actions';
@@ -282,8 +289,9 @@ function bindEvents() {
 
   els.newProjectBtn.addEventListener('click', () => {
     const name = els.newProjectName.value;
+    const presetId = els.canvasPresetSelect?.value || DEFAULT_CANVAS_PRESET_ID;
     els.newProjectName.value = '';
-    const project = createProject(name);
+    const project = createProject(name, presetId);
     openProject(project.id);
   });
 

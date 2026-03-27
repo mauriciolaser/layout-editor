@@ -1,7 +1,7 @@
 # Layout Editor
 
 ## Resumen
-Proyecto web estatico para crear y gestionar proyectos de layouts 2D sobre un canvas fijo de `1920x1080`.
+Proyecto web estatico para crear y gestionar proyectos de layouts 2D sobre canvas preset de industria: `1920x1080` (landscape) y `1080x1920` (portrait).
 
 El producto hoy tiene dos vistas principales:
 
@@ -48,11 +48,25 @@ El documento exportado mantiene este formato base:
 
 ```json
 {
-  "version": 1,
+  "version": 2,
   "canvas": {
     "width": 1920,
     "height": 1080,
     "aspect": "16:9"
+  },
+  "instances": []
+}
+```
+
+Tambien se soporta el preset portrait:
+
+```json
+{
+  "version": 2,
+  "canvas": {
+    "width": 1080,
+    "height": 1920,
+    "aspect": "9:16"
   },
   "instances": []
 }
@@ -76,6 +90,7 @@ Internamente el editor usa `_order` para desempates visuales y orden estable, pe
 - Los proyectos se guardan en `localStorage` con la key `perulainen.layoutEditor.projects.v1`.
 - El idioma activo se guarda en `perulainen.layoutEditor.lang.v1`.
 - Crear proyecto genera un `id` tipo `proj_<timestamp>_<rand>`.
+- El formulario de Home permite elegir preset de canvas para cada proyecto nuevo.
 - Cada proyecto guarda:
   - `id`
   - `name`
@@ -90,7 +105,7 @@ Internamente el editor usa `_order` para desempates visuales y orden estable, pe
 - Drag para mover instancias con snap a grilla.
 - Resize mediante handles en las cuatro esquinas.
 - Hit-testing prioriza mayor `z` y luego orden interno.
-- El canvas visible se escala para entrar en pantalla, pero las coordenadas del documento siguen siendo `1920x1080`.
+- El canvas visible se escala para entrar en pantalla, pero las coordenadas del documento siguen siendo las del preset del proyecto (`1920x1080` o `1080x1920`).
 
 ### Controles
 - Grilla editable (`2` a `200`).
@@ -102,10 +117,15 @@ Internamente el editor usa `_order` para desempates visuales y orden estable, pe
 - Volver a Home desde el boton del editor.
 
 ### Importacion JSON
-- La importacion espera el mismo contrato exportado por el editor: objeto raiz con `version`, `canvas` e `instances`.
+- La importacion espera contrato JSON v2: objeto raiz con `version: 2`, `canvas` soportado y `instances`.
 - El usuario selecciona un archivo `.json` local y confirma antes de reemplazar el documento actual.
-- Si el JSON es valido, el documento abierto se normaliza y se guarda en el proyecto actual.
+- Si el JSON es valido, el documento abierto adopta su canvas y se guarda en el proyecto actual.
 - Si el archivo no tiene el formato esperado o el parseo falla, la UI muestra un estado de error y no reemplaza nada.
+- Si el JSON usa `version: 1` o un canvas no soportado por Sprint 1, se rechaza la importacion.
+
+### Migracion Local
+- Los proyectos guardados localmente con documentos legacy (`version: 1`) se migran automaticamente a `version: 2` al abrirse.
+- La migracion conserva instancias y normaliza canvas al catalogo soportado.
 
 ### Sidebar
 - Resumen de seleccion actual.

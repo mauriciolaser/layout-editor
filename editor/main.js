@@ -1,6 +1,16 @@
-export const CANVAS_WIDTH = 1920;
-export const CANVAS_HEIGHT = 1080;
-export const CANVAS_ASPECT = '16:9';
+export const DOCUMENT_VERSION = 2;
+export const DEFAULT_CANVAS_PRESET_ID = 'landscape_fhd';
+export const CANVAS_PRESETS = Object.freeze([
+  Object.freeze({ id: 'landscape_fhd', width: 1920, height: 1080, aspect: '16:9' }),
+  Object.freeze({ id: 'portrait_fhd', width: 1080, height: 1920, aspect: '9:16' }),
+]);
+
+const CANVAS_PRESET_BY_ID = Object.freeze(
+  CANVAS_PRESETS.reduce((acc, preset) => {
+    acc[preset.id] = preset;
+    return acc;
+  }, {}),
+);
 
 const MIN_SIZE = 10;
 const DEFAULT_GRID = 10;
@@ -15,20 +25,164 @@ const DEFAULT_INSTANCE = {
   notes: '',
 };
 
-export function createBlankDocument() {
+function normalizeAspect(width, height) {
+  if (width === 1920 && height === 1080) return '16:9';
+  if (width === 1080 && height === 1920) return '9:16';
+  return `${width}:${height}`;
+}
+
+function getPresetByCanvas(width, height) {
+  return CANVAS_PRESETS.find((preset) => preset.width === width && preset.height === height) || null;
+}
+
+export function getCanvasPreset(id) {
+  return CANVAS_PRESET_BY_ID[id] || CANVAS_PRESET_BY_ID[DEFAULT_CANVAS_PRESET_ID];
+}
+
+export function isSupportedCanvas(canvas) {
+  if (!canvas || typeof canvas !== 'object') return false;
+  const width = Number(canvas.width);
+  const height = Number(canvas.height);
+  if (!Number.isInteger(width) || !Number.isInteger(height)) return false;
+  return !!getPresetByCanvas(width, height);
+}
+
+function resolveTargetCanvas(canvasLike) {
+  if (isSupportedCanvas(canvasLike)) {
+    const matched = getPresetByCanvas(Number(canvasLike.width), Number(canvasLike.height));
+    return { ...matched };
+  }
+
+  const fallback = getCanvasPreset(DEFAULT_CANVAS_PRESET_ID);
+  return { ...fallback };
+}
+
+function scaleValue(value, ratio) {
+  return Math.round(Number(value) * ratio);
+}
+
+function normalizeInstance(raw, index, canvas, sourceCanvas) {
+  const item = raw && typeof raw === 'object' ? raw : {};
+  const id = String(item.id || `instance_${String(index + 1).padStart(3, '0')}`);
+
+  const sourceWidth = Math.max(MIN_SIZE, Number(sourceCanvas.width) || canvas.width);
+  const sourceHeight = Math.max(MIN_SIZE, Number(sourceCanvas.height) || canvas.height);
+  const ratioX = canvas.width / sourceWidth;
+  const ratioY = canvas.height / sourceHeight;
+
+  let x = Number.isFinite(Number(item.x)) ? Number(item.x) : DEFAULT_INSTANCE.x;
+  let y = Number.isFinite(Number(item.y)) ? Number(item.y) : DEFAULT_INSTANCE.y;
+  let width = Number.isFinite(Number(item.width)) ? Number(item.width) : DEFAULT_INSTANCE.width;
+  let height = Number.isFinite(Number(item.height)) ? Number(item.height) : DEFAULT_INSTANCE.height;
+
+  if (sourceWidth !== canvas.width || sourceHeight !== canvas.height) {
+    x = scaleValue(x, ratioX);
+    y = scaleValue(y, ratioY);
+    width = scaleValue(width, ratioX);
+    height = scaleValue(height, ratioY);
+  }
+
+  width = Math.max(MIN_SIZE, width);
+  height = Math.max(MIN_SIZE, height);
+  x = clamp(x, 0, canvas.width - width);
+  y = clamp(y, 0, canvas.height - height);
+  width = clamp(width, MIN_SIZE, canvas.width - x);
+  height = clamp(height, MIN_SIZE, canvas.height - y);
+
   return {
-    version: 1,
+    id,
+    label: String(item.label || id),
+    notes: String(item.notes || ''),
+    x,
+    y,
+    width,
+    height,
+    z: Number.isFinite(Number(item.z)) ? Math.round(Number(item.z)) : DEFAULT_INSTANCE.z,
+    color: String(item.color || DEFAULT_INSTANCE.color),
+    _order: index + 1,
+  };
+}
+
+export function createBlankDocument(presetId = DEFAULT_CANVAS_PRESET_ID) {
+  const preset = getCanvasPreset(presetId);
+  return {
+    version: DOCUMENT_VERSION,
     canvas: {
-      width: CANVAS_WIDTH,
-      height: CANVAS_HEIGHT,
-      aspect: CANVAS_ASPECT,
+      width: preset.width,
+      height: preset.height,
+      aspect: preset.aspect,
     },
     instances: [],
   };
 }
 
+function normalizeIncomingDocument(doc) {
+  const incoming = doc && typeof doc === 'object' ? doc : {};
+  const canvasIncoming = incoming.canvas && typeof incoming.canvas === 'object' ? incoming.canvas : {};
+  const instancesIncoming = Array.isArray(incoming.instances) ? incoming.instances : [];
+  const sourceCanvas = {
+    width: Number.isFinite(Number(canvasIncoming.width)) ? Number(canvasIncoming.width) : 1920,
+    height: Number.isFinite(Number(canvasIncoming.height)) ? Number(canvasIncoming.height) : 1080,
+  };
+  const canvas = resolveTargetCanvas(canvasIncoming);
+  const instances = instancesIncoming.map((instance, index) => normalizeInstance(instance, index, canvas, sourceCanvas));
+  const version = Number.isFinite(Number(incoming.version)) ? Number(incoming.version) : 1;
+
+  return {
+    version: DOCUMENT_VERSION,
+    canvas: {
+      width: canvas.width,
+      height: canvas.height,
+      aspect: canvas.aspect || normalizeAspect(canvas.width, canvas.height),
+    },
+    instances,
+    meta: {
+      migratedFromLegacy: version < DOCUMENT_VERSION,
+      migratedFromUnsupportedCanvas: !isSupportedCanvas(canvasIncoming),
+    },
+  };
+}
+
+function validateImportDocument(doc) {
+  if (!doc || typeof doc !== 'object' || Array.isArray(doc)) {
+    return { ok: false, reason: 'wrongFormat' };
+  }
+
+  if (Number(doc.version) !== DOCUMENT_VERSION) {
+    return { ok: false, reason: 'wrongVersion' };
+  }
+
+  if (!doc.canvas || typeof doc.canvas !== 'object' || Array.isArray(doc.canvas)) {
+    return { ok: false, reason: 'wrongFormat' };
+  }
+
+  if (!isSupportedCanvas(doc.canvas)) {
+    return { ok: false, reason: 'unsupportedCanvas' };
+  }
+
+  if (!Array.isArray(doc.instances)) {
+    return { ok: false, reason: 'wrongFormat' };
+  }
+
+  for (const instance of doc.instances) {
+    if (!instance || typeof instance !== 'object' || Array.isArray(instance)) {
+      return { ok: false, reason: 'wrongFormat' };
+    }
+  }
+
+  return { ok: true };
+}
+
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
+}
+
+function readCanvasWidth(doc) {
+  return Number(doc?.canvas?.width) || getCanvasPreset(DEFAULT_CANVAS_PRESET_ID).width;
+}
+
+function readCanvasHeight(doc) {
+  return Number(doc?.canvas?.height) || getCanvasPreset(DEFAULT_CANVAS_PRESET_ID).height;
 }
 
 export function createEditor({ onBack, onDocumentChange, ui: initialUi = {} } = {}) {
@@ -64,7 +218,7 @@ export function createEditor({ onBack, onDocumentChange, ui: initialUi = {} } = 
 
   const state = {
     grid: Number(gridInput?.value) || DEFAULT_GRID,
-    document: createBlankDocument(),
+    document: createBlankDocument(DEFAULT_CANVAS_PRESET_ID),
     selectedId: null,
     drag: null,
     nextId: 1,
@@ -104,7 +258,7 @@ export function createEditor({ onBack, onDocumentChange, ui: initialUi = {} } = 
   }
 
   function getCanvasScale() {
-    return canvas.width / CANVAS_WIDTH;
+    return canvas.width / readCanvasWidth(state.document);
   }
 
   function getSortedInstancesAsc() {
@@ -133,21 +287,23 @@ export function createEditor({ onBack, onDocumentChange, ui: initialUi = {} } = 
 
   function drawGrid(scale) {
     const grid = getGridSize();
+    const canvasWidth = readCanvasWidth(state.document);
+    const canvasHeight = readCanvasHeight(state.document);
     ctx.save();
     ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
     ctx.lineWidth = 1;
 
-    for (let x = 0; x <= CANVAS_WIDTH; x += grid) {
+    for (let x = 0; x <= canvasWidth; x += grid) {
       ctx.beginPath();
       ctx.moveTo(x * scale, 0);
-      ctx.lineTo(x * scale, CANVAS_HEIGHT * scale);
+      ctx.lineTo(x * scale, canvasHeight * scale);
       ctx.stroke();
     }
 
-    for (let y = 0; y <= CANVAS_HEIGHT; y += grid) {
+    for (let y = 0; y <= canvasHeight; y += grid) {
       ctx.beginPath();
       ctx.moveTo(0, y * scale);
-      ctx.lineTo(CANVAS_WIDTH * scale, y * scale);
+      ctx.lineTo(canvasWidth * scale, y * scale);
       ctx.stroke();
     }
 
@@ -155,10 +311,12 @@ export function createEditor({ onBack, onDocumentChange, ui: initialUi = {} } = 
   }
 
   function drawCanvasFrame(scale) {
+    const canvasWidth = readCanvasWidth(state.document);
+    const canvasHeight = readCanvasHeight(state.document);
     ctx.save();
     ctx.strokeStyle = 'rgba(0, 0, 0, 0.18)';
     ctx.lineWidth = 2;
-    ctx.strokeRect(1, 1, CANVAS_WIDTH * scale - 2, CANVAS_HEIGHT * scale - 2);
+    ctx.strokeRect(1, 1, canvasWidth * scale - 2, canvasHeight * scale - 2);
     ctx.restore();
   }
 
@@ -221,18 +379,22 @@ export function createEditor({ onBack, onDocumentChange, ui: initialUi = {} } = 
 
   function resizeCanvas() {
     const wrapper = canvas.parentElement;
+    const canvasWidth = readCanvasWidth(state.document);
+    const canvasHeight = readCanvasHeight(state.document);
     const maxWidth = Math.max(320, wrapper.clientWidth - 28);
     const maxHeight = Math.max(240, window.innerHeight - 280);
-    const scale = Math.min(maxWidth / CANVAS_WIDTH, maxHeight / CANVAS_HEIGHT, 1);
-    canvas.width = Math.round(CANVAS_WIDTH * scale);
-    canvas.height = Math.round(CANVAS_HEIGHT * scale);
+    const scale = Math.min(maxWidth / canvasWidth, maxHeight / canvasHeight, 1);
+    canvas.width = Math.round(canvasWidth * scale);
+    canvas.height = Math.round(canvasHeight * scale);
     canvas.style.width = `${canvas.width}px`;
     canvas.style.height = `${canvas.height}px`;
     draw();
   }
 
   function updateMeta() {
-    canvasMeta.textContent = `${tr('editor.meta.canvasPrefix', 'Canvas:')} ${CANVAS_WIDTH} x ${CANVAS_HEIGHT}`;
+    const canvasWidth = readCanvasWidth(state.document);
+    const canvasHeight = readCanvasHeight(state.document);
+    canvasMeta.textContent = `${tr('editor.meta.canvasPrefix', 'Canvas:')} ${canvasWidth} x ${canvasHeight}`;
     instanceCountMeta.textContent = `${tr('editor.meta.instancePrefix', 'Instances:')} ${state.document.instances.length}`;
     const selected = getSelectedInstance();
     selectionMeta.textContent = selected
@@ -453,8 +615,10 @@ export function createEditor({ onBack, onDocumentChange, ui: initialUi = {} } = 
     const deltaY = (mouse.y - startMouse.y) / scale;
 
     if (mode === 'move') {
-      const nextX = clamp(snap(startRect.x + deltaX), 0, CANVAS_WIDTH - instance.width);
-      const nextY = clamp(snap(startRect.y + deltaY), 0, CANVAS_HEIGHT - instance.height);
+      const canvasWidth = readCanvasWidth(state.document);
+      const canvasHeight = readCanvasHeight(state.document);
+      const nextX = clamp(snap(startRect.x + deltaX), 0, canvasWidth - instance.width);
+      const nextY = clamp(snap(startRect.y + deltaY), 0, canvasHeight - instance.height);
       instance.x = nextX;
       instance.y = nextY;
     }
@@ -491,10 +655,12 @@ export function createEditor({ onBack, onDocumentChange, ui: initialUi = {} } = 
 
       nextWidth = Math.max(MIN_SIZE, nextWidth);
       nextHeight = Math.max(MIN_SIZE, nextHeight);
-      nextX = clamp(nextX, 0, CANVAS_WIDTH - nextWidth);
-      nextY = clamp(nextY, 0, CANVAS_HEIGHT - nextHeight);
-      nextWidth = clamp(nextWidth, MIN_SIZE, CANVAS_WIDTH - nextX);
-      nextHeight = clamp(nextHeight, MIN_SIZE, CANVAS_HEIGHT - nextY);
+      const canvasWidth = readCanvasWidth(state.document);
+      const canvasHeight = readCanvasHeight(state.document);
+      nextX = clamp(nextX, 0, canvasWidth - nextWidth);
+      nextY = clamp(nextY, 0, canvasHeight - nextHeight);
+      nextWidth = clamp(nextWidth, MIN_SIZE, canvasWidth - nextX);
+      nextHeight = clamp(nextHeight, MIN_SIZE, canvasHeight - nextY);
 
       instance.x = nextX;
       instance.y = nextY;
@@ -544,8 +710,8 @@ export function createEditor({ onBack, onDocumentChange, ui: initialUi = {} } = 
       id: `instance_${String(nextIndex).padStart(3, '0')}`,
       label: `${tr('editor.instancePrefix', 'Instance')} ${String(nextIndex).padStart(3, '0')}`,
       notes: '',
-      x: clamp(x, 0, CANVAS_WIDTH - DEFAULT_INSTANCE.width),
-      y: clamp(y, 0, CANVAS_HEIGHT - DEFAULT_INSTANCE.height),
+      x: clamp(x, 0, readCanvasWidth(state.document) - DEFAULT_INSTANCE.width),
+      y: clamp(y, 0, readCanvasHeight(state.document) - DEFAULT_INSTANCE.height),
       width: DEFAULT_INSTANCE.width,
       height: DEFAULT_INSTANCE.height,
       z,
@@ -605,19 +771,19 @@ export function createEditor({ onBack, onDocumentChange, ui: initialUi = {} } = 
     }
 
     if (key === 'x') {
-      selected.x = clamp(snap(numericValue), 0, CANVAS_WIDTH - selected.width);
+      selected.x = clamp(snap(numericValue), 0, readCanvasWidth(state.document) - selected.width);
     }
 
     if (key === 'y') {
-      selected.y = clamp(snap(numericValue), 0, CANVAS_HEIGHT - selected.height);
+      selected.y = clamp(snap(numericValue), 0, readCanvasHeight(state.document) - selected.height);
     }
 
     if (key === 'width') {
-      selected.width = clamp(snap(numericValue), MIN_SIZE, CANVAS_WIDTH - selected.x);
+      selected.width = clamp(snap(numericValue), MIN_SIZE, readCanvasWidth(state.document) - selected.x);
     }
 
     if (key === 'height') {
-      selected.height = clamp(snap(numericValue), MIN_SIZE, CANVAS_HEIGHT - selected.y);
+      selected.height = clamp(snap(numericValue), MIN_SIZE, readCanvasHeight(state.document) - selected.y);
     }
 
     if (key === 'z') {
@@ -685,17 +851,6 @@ export function createEditor({ onBack, onDocumentChange, ui: initialUi = {} } = 
     setStatus(tr('editor.status.exported', 'JSON exported as editor-layout.json'));
   }
 
-  function isLikelyEditorDocument(doc) {
-    return !!(
-      doc &&
-      typeof doc === 'object' &&
-      !Array.isArray(doc) &&
-      doc.canvas &&
-      typeof doc.canvas === 'object' &&
-      Array.isArray(doc.instances)
-    );
-  }
-
   async function importJsonFile(file) {
     if (!file) {
       setStatus(tr('editor.status.importCancelled', 'Import cancelled.'));
@@ -705,8 +860,16 @@ export function createEditor({ onBack, onDocumentChange, ui: initialUi = {} } = 
     try {
       const raw = await file.text();
       const parsed = JSON.parse(raw);
-
-      if (!isLikelyEditorDocument(parsed)) {
+      const validation = validateImportDocument(parsed);
+      if (!validation.ok) {
+        if (validation.reason === 'wrongVersion') {
+          setStatus(tr('editor.status.importWrongVersion', 'The file version is not supported by this editor.'));
+          return;
+        }
+        if (validation.reason === 'unsupportedCanvas') {
+          setStatus(tr('editor.status.importUnsupportedCanvas', 'The file canvas is not supported by this editor.'));
+          return;
+        }
         setStatus(tr('editor.status.importWrongFormat', 'The file does not contain a valid editor document.'));
         return;
       }
@@ -806,53 +969,31 @@ export function createEditor({ onBack, onDocumentChange, ui: initialUi = {} } = 
     }
   }
 
-  function normalizeIncomingDocument(doc) {
-    const base = createBlankDocument();
-    const incoming = doc && typeof doc === 'object' ? doc : {};
-    const canvasIncoming = incoming.canvas && typeof incoming.canvas === 'object' ? incoming.canvas : {};
-    const instancesIncoming = Array.isArray(incoming.instances) ? incoming.instances : [];
-
-    const instances = instancesIncoming.map((instance, index) => {
-      const item = instance && typeof instance === 'object' ? instance : {};
-      const id = String(item.id || `instance_${String(index + 1).padStart(3, '0')}`);
-      return {
-        id,
-        label: String(item.label || id),
-        notes: String(item.notes || ''),
-        x: Number.isFinite(Number(item.x)) ? Number(item.x) : DEFAULT_INSTANCE.x,
-        y: Number.isFinite(Number(item.y)) ? Number(item.y) : DEFAULT_INSTANCE.y,
-        width: Number.isFinite(Number(item.width)) ? Number(item.width) : DEFAULT_INSTANCE.width,
-        height: Number.isFinite(Number(item.height)) ? Number(item.height) : DEFAULT_INSTANCE.height,
-        z: Number.isFinite(Number(item.z)) ? Math.round(Number(item.z)) : DEFAULT_INSTANCE.z,
-        color: String(item.color || DEFAULT_INSTANCE.color),
-        _order: index + 1,
-      };
-    });
-
-    return {
-      version: Number.isFinite(Number(incoming.version)) ? Number(incoming.version) : base.version,
-      canvas: {
-        width: Number.isFinite(Number(canvasIncoming.width)) ? Number(canvasIncoming.width) : base.canvas.width,
-        height: Number.isFinite(Number(canvasIncoming.height)) ? Number(canvasIncoming.height) : base.canvas.height,
-        aspect: String(canvasIncoming.aspect || base.canvas.aspect),
-      },
-      instances,
-    };
-  }
-
   function loadDocument(doc, options = {}) {
-    state.document = normalizeIncomingDocument(doc);
+    const normalized = normalizeIncomingDocument(doc);
+    state.document = {
+      version: normalized.version,
+      canvas: normalized.canvas,
+      instances: normalized.instances,
+    };
     state.selectedId = state.document.instances[0]?.id ?? null;
     updateNextIdSeed();
-    setStatus(options.status || tr('editor.status.projectLoaded', 'Project loaded.'));
+    if (options.status) {
+      setStatus(options.status);
+    } else if (normalized.meta.migratedFromLegacy) {
+      setStatus(tr('editor.status.projectMigrated', 'Project migrated to JSON v2.'));
+    } else {
+      setStatus(tr('editor.status.projectLoaded', 'Project loaded.'));
+    }
     // If the editor was initialized while hidden, recompute now.
     resizeCanvas();
     syncUi();
     emitChange();
+    return normalized.meta;
   }
 
-  function newDocument() {
-    loadDocument(createBlankDocument());
+  function newDocument(presetId = DEFAULT_CANVAS_PRESET_ID) {
+    loadDocument(createBlankDocument(presetId));
   }
 
   function init() {

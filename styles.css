@@ -72,7 +72,9 @@
       }
 
       .toolbar input,
+      .toolbar select,
       .field input,
+      .field select,
       .field textarea,
       .field button,
       .toolbar button {
@@ -84,7 +86,9 @@
       }
 
       .toolbar input,
+      .toolbar select,
       .field input,
+      .field select,
       .field textarea {
         width: 100%;
         min-width: 0;
